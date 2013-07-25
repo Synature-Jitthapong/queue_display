@@ -5,13 +5,22 @@ import com.syn.queuedisplay.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 /**
@@ -49,6 +58,7 @@ public class QueueDisplayActivity extends Activity{
 	 */
 	private SystemUiHider mSystemUiHider;
 
+	private QueueData queueData;
 	private SurfaceView surface;
 	private SurfaceHolder surfaceHolder;
 	private TextView tvMarquee;
@@ -64,9 +74,12 @@ public class QueueDisplayActivity extends Activity{
 		tvMarquee.setSelected(true);
 		
 		surfaceHolder = surface.getHolder();
-		MyMediaPlayer mMediaPlayer = 
-				new MyMediaPlayer(QueueDisplayActivity.this, surface, surfaceHolder, "video");
 
+		readQueueData();
+		
+		MyMediaPlayer mMediaPlayer = 
+				new MyMediaPlayer(QueueDisplayActivity.this, surface, surfaceHolder, queueData.getVideoPath());
+		
 		// Set up an instance of SystemUiHider to control the system UI for
 		// this activity.
 		mSystemUiHider = SystemUiHider.getInstance(this, contentView,
@@ -105,6 +118,92 @@ public class QueueDisplayActivity extends Activity{
 		// created, to briefly hint to the user that UI controls
 		// are available.
 		delayedHide(100);
+	}
+
+	private void readQueueData(){
+		QueueDisplayData config = 
+				new QueueDisplayData(QueueDisplayActivity.this);
+		queueData = config.readConfig();
+	}
+	
+	private void popupSetting(){
+		LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
+		final View v = inflater.inflate(R.layout.activity_setting, null);
+		final EditText txtIp = (EditText) v.findViewById(R.id.editText1);
+		final EditText txtService = (EditText) v.findViewById(R.id.editText2);
+		final EditText txtVideoDir = (EditText) v.findViewById(R.id.editText3);
+		final Button btnCancel = (Button) v.findViewById(R.id.button1);
+		final Button btnOk = (Button) v.findViewById(R.id.button2);
+		
+		txtIp.setText(queueData.getServerIp());
+		txtService.setText(queueData.getServiceName());
+		txtVideoDir.setText(queueData.getVideoPath());
+		
+		final Dialog d = new Dialog(QueueDisplayActivity.this);
+		d.setContentView(v);
+		d.setTitle("Setting");
+		d.show();
+		
+		btnCancel.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				d.dismiss();
+			}
+			
+		});
+		
+		btnOk.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				String ip = txtIp.getText().toString();
+				String service = txtService.getText().toString();
+				String videoDir = txtVideoDir.getText().toString();
+				
+				if(!ip.equals("") && !service.equals("")){
+					QueueDisplayData config = 
+							new QueueDisplayData(QueueDisplayActivity.this);
+					
+					config.addConfig(ip, service, videoDir, "");
+					
+					d.dismiss();
+					
+					Intent intent = 
+							new Intent(QueueDisplayActivity.this, QueueDisplayActivity.class);
+					QueueDisplayActivity.this.startActivity(intent);
+				}else{
+					String errMsg = "";
+					if(ip.equals(""))
+						errMsg = "Please enter IP Address";
+					else
+						errMsg = "Please enter Web service";
+					
+					new AlertDialog.Builder(QueueDisplayActivity.this)
+					.setTitle("Error")
+					.setMessage(errMsg)
+					.show();
+				}
+			}
+			
+		});
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.setting, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_settings:
+			popupSetting();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	/**

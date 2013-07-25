@@ -25,26 +25,21 @@ public class QueueDisplayData {
 		db.close();
 	}
 	
-	public List<QueueData> readConfig(){
-		List<QueueData> queueLst = 
-				new ArrayList<QueueData>();
-		
+	public QueueData readConfig(){
+		QueueData config = new QueueData();
 		String strSql = "SELECT * FROM config";
-		
 		open();
 		Cursor cursor = db.rawQuery(strSql, null);
 		if(cursor.moveToFirst()){
 			do{
-				QueueData config = new QueueData();
 				config.setServerIp(cursor.getString(cursor.getColumnIndex("server_ip")));
 				config.setServiceName(cursor.getString(cursor.getColumnIndex("service_name")));
 				config.setVideoPath(cursor.getString(cursor.getColumnIndex("video_path")));
 				config.setLogoPath(cursor.getString(cursor.getColumnIndex("logo_path")));
-				queueLst.add(config);
 			}while(cursor.moveToNext());
 		}
 		close();
-		return queueLst;
+		return config;
 	}
 	
 	public void addConfig(String ip, String serviceName, String videoPath, String logoPath){

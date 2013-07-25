@@ -5,9 +5,11 @@ import org.ksoap2.serialization.PropertyInfo;
 import android.content.Context;
 
 public class QueueDisplayService extends QueueDisplayMainService {
-
-	public QueueDisplayService(Context c) {
+	Callback callback;
+	public QueueDisplayService(Context c, Callback listener) {
 		super(c, "");
+		
+		callback = listener;
 		
 //		property = new PropertyInfo();
 //		property.setName("iShopID");
@@ -24,14 +26,12 @@ public class QueueDisplayService extends QueueDisplayMainService {
 
 	@Override
 	protected void onPostExecute(String result) {
-		// TODO Auto-generated method stub
-		super.onPostExecute(result);
+		callback.onSuccess();
 	}
 
 	@Override
 	protected void onPreExecute() {
-		// TODO Auto-generated method stub
-		super.onPreExecute();
+		callback.onProgress();
 	}
 	
 	public static interface Callback{
