@@ -1,8 +1,11 @@
 package com.syn.queuedisplay;
 
-import com.j1tth4.mobile.core.sqlite.SqliteDatabase;
+import java.util.ArrayList;
+import java.util.List;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -22,7 +25,39 @@ public class QueueDisplayData {
 		db.close();
 	}
 	
-	public void addConfig(String ip, String serviceName, String videoPath, String logoPath){
+	public List<QueueData> readConfig(){
+		List<QueueData> queueLst = 
+				new ArrayList<QueueData>();
 		
+		String strSql = "SELECT * FROM config";
+		
+		open();
+		Cursor cursor = db.rawQuery(strSql, null);
+		if(cursor.moveToFirst()){
+			do{
+				QueueData config = new QueueData();
+				config.setServerIp(cursor.getString(cursor.getColumnIndex("server_ip")));
+				config.setServiceName(cursor.getString(cursor.getColumnIndex("service_name")));
+				config.setVideoPath(cursor.getString(cursor.getColumnIndex("video_path")));
+				config.setLogoPath(cursor.getString(cursor.getColumnIndex("logo_path")));
+				queueLst.add(config);
+			}while(cursor.moveToNext());
+		}
+		close();
+		return queueLst;
+	}
+	
+	public void addConfig(String ip, String serviceName, String videoPath, String logoPath){
+		ContentValues cv = new ContentValues();
+		cv.put("server_ip", ip);
+		cv.put("service_name", serviceName);
+		cv.put("video_path", videoPath);
+		cv.put("logo_path", logoPath);
+		
+		open();
+		db.execSQL("DELETE FROM config");
+		db.insert("config", null, cv);
+		close();
 	}
 }
+	
