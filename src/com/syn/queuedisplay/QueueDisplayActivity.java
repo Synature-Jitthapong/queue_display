@@ -417,7 +417,7 @@ public class QueueDisplayActivity extends Activity{
 					TextView tvNo = (TextView) v.findViewById(R.id.textViewTakeNo);
 					
 					tvNo.setText(Integer.toString(i + 1));
-					tvName.setText(takeAwayData.getSzTransName());
+					tvName.setText(takeAwayData.getSzQueueName());
 					tvTimeIn.setText(takeAwayData.getSzStartDateTime());
 					tvStatus.setText(takeAwayData.getSzKdsStatusName());
 
