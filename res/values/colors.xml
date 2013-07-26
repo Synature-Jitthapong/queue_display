@@ -7,5 +7,9 @@
     <color name="sub_bacground">#FFEAD2B5</color>
     <color name="list_background">#FFD7C293</color>
     <color name="header_text">#FF0631FA</color>
+    <color name="head_dark">#FF202020</color>
+    <color name="sub_head_dark">#FF202020</color>
+    <color name="background_dark">#FF3D4C65</color>
+    <color name="list_background_dark">#FF414141</color>
 
 </resources>

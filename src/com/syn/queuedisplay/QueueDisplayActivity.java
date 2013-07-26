@@ -121,7 +121,7 @@ public class QueueDisplayActivity extends Activity{
 
 		// update queue
 		handler = new Handler();
-		handler.post(updateQueue);
+		//handler.post(updateQueue);
 		handler2 = new Handler();
 		handler2.post(updateQueueTake);
 		
@@ -173,7 +173,7 @@ public class QueueDisplayActivity extends Activity{
 			if (isRun) {
 				try {
 					createQueue();
-					handler.postDelayed(this, 30000);
+					handler.postDelayed(this, 5000);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -191,7 +191,7 @@ public class QueueDisplayActivity extends Activity{
 			if (isRun) {
 				try {
 					createTakeAway();
-					handler2.postDelayed(this, 30000);
+					handler2.postDelayed(this, 5000);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -416,10 +416,14 @@ public class QueueDisplayActivity extends Activity{
 					TextView tvStatus = (TextView) v.findViewById(R.id.textViewTakeStatus);
 					TextView tvNo = (TextView) v.findViewById(R.id.textViewTakeNo);
 					
-					tvNo.setText(Integer.toString(i + 1));
-					tvName.setText(takeAwayData.getSzQueueName());
+					tvNo.setText(takeAwayData.getSzQueueName());
+					tvNo.setSelected(true);
+					tvName.setText(takeAwayData.getSzTransName());
+					tvName.setSelected(true);
 					tvTimeIn.setText(takeAwayData.getSzStartDateTime());
+					tvTimeIn.setSelected(true);
 					tvStatus.setText(takeAwayData.getSzKdsStatusName());
+					tvStatus.setSelected(true);
 
 					takeAwayLayout.addView(v);
 					i++;
