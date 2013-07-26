@@ -32,6 +32,7 @@ public class QueueDisplayData {
 		Cursor cursor = db.rawQuery(strSql, null);
 		if(cursor.moveToFirst()){
 			do{
+				config.setShopId(cursor.getInt(cursor.getColumnIndex("shop_id")));
 				config.setServerIp(cursor.getString(cursor.getColumnIndex("server_ip")));
 				config.setServiceName(cursor.getString(cursor.getColumnIndex("service_name")));
 				config.setVideoPath(cursor.getString(cursor.getColumnIndex("video_path")));
@@ -42,8 +43,9 @@ public class QueueDisplayData {
 		return config;
 	}
 	
-	public void addConfig(String ip, String serviceName, String videoPath, String logoPath){
+	public void addConfig(int shopId, String ip, String serviceName, String videoPath, String logoPath){
 		ContentValues cv = new ContentValues();
+		cv.put("shop_id", shopId);
 		cv.put("server_ip", ip);
 		cv.put("service_name", serviceName);
 		cv.put("video_path", videoPath);

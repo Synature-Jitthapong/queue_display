@@ -1,32 +1,30 @@
 package com.syn.queuedisplay;
 
-import org.ksoap2.serialization.PropertyInfo;
+import syn.pos.data.json.GsonDeserialze;
+import syn.pos.data.model.QueueDisplayInfo;
 
 import android.content.Context;
 
 public class QueueDisplayService extends QueueDisplayMainService {
-	Callback callback;
-	public QueueDisplayService(Context c, Callback listener) {
-		super(c, "");
+	private Callback callback;
+	public QueueDisplayService(Context c, int shopId, String deviceCode, Callback listener) {
+		super(c, shopId, deviceCode, "WSiQueue_JSON_GetCurrentAllQueueDisplay");
 		
 		callback = listener;
-		
-//		property = new PropertyInfo();
-//		property.setName("iShopID");
-//		property.setValue(4);
-//		property.setType(int.class);
-//		soapRequest.addProperty(property);
-//		
-//		property = new PropertyInfo();
-//		property.setName("szDeviceCode");
-//		property.setValue("2e8752a898cb3c94");
-//		property.setType(String.class);
-//		soapRequest.addProperty(property);
 	}
 
 	@Override
 	protected void onPostExecute(String result) {
-		callback.onSuccess();
+		GsonDeserialze gdz = new GsonDeserialze();
+		
+		try {
+			QueueDisplayInfo queueDisplayInfo = gdz
+					.deserializeQueueDisplayInfoJSON(result);
+			
+			callback.onSuccess(queueDisplayInfo);
+		} catch (Exception e) {
+			callback.onError(e.getMessage());
+		}
 	}
 
 	@Override
@@ -35,9 +33,8 @@ public class QueueDisplayService extends QueueDisplayMainService {
 	}
 	
 	public static interface Callback{
-		public void onSuccess();
+		public void onSuccess(QueueDisplayInfo qInfo);
 		public void onProgress();
-		public void onError();
+		public void onError(String msg);
 	}
-
 }

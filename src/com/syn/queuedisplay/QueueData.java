@@ -1,11 +1,18 @@
 package com.syn.queuedisplay;
 
 public class QueueData {
+	private int shopId;
 	private String serverIp;
 	private String serviceName;
 	private String videoPath;
 	private String logoPath;
 	
+	public int getShopId() {
+		return shopId;
+	}
+	public void setShopId(int shopId) {
+		this.shopId = shopId;
+	}
 	public String getServerIp() {
 		return serverIp;
 	}

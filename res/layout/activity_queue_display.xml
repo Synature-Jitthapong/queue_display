@@ -3,7 +3,7 @@
     android:id="@+id/queue_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="@android:color/background_dark"
     tools:context=".QueueDisplayActivity" >
 
     <!--
@@ -34,20 +34,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleType="fitXY"
-                android:src="@drawable/piz_logo" />
+                android:src="@drawable/header_logo" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/sub_bacground"
             android:orientation="vertical" >
 
             <LinearLayout
                 android:id="@+id/LinearLayout1"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="2dp"
+                android:layout_height="30dp"
+                android:layout_marginBottom="2dp"
                 android:background="@color/sub_head"
                 android:gravity="center_vertical"
                 android:orientation="vertical"
@@ -59,7 +60,8 @@
                     android:layout_height="wrap_content"
                     android:text="TakeAway"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="@color/header_text" />
+                    android:textColor="@color/header_text"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -71,9 +73,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="4dp"
                 android:layout_weight="1"
-                android:background="@color/sub_bacground"
                 android:orientation="vertical" >
 
                 <LinearLayout
@@ -83,26 +83,79 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_margin="2dp"
-                        android:layout_weight="1"
+                        android:layout_marginRight="2dp"
+                        android:layout_weight="1.5"
                         android:orientation="vertical" >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" >
+
+                            <TextView
+                                android:id="@+id/textView1"
+                                android:layout_width="24dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="1dp"
+                                android:background="@color/sub_head"
+                                android:gravity="right"
+                                android:padding="4dp"
+                                android:text="#"
+                                android:textAppearance="?android:attr/textAppearanceMedium"
+                                android:textColor="@color/header_text" />
+
+                            <TextView
+                                android:id="@+id/textView6"
+                                android:layout_width="200dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="1dp"
+                                android:layout_weight="1"
+                                android:background="@color/sub_head"
+                                android:padding="4dp"
+                                android:text="Name"
+                                android:textAppearance="?android:attr/textAppearanceMedium"
+                                android:textColor="@color/header_text" />
+
+                            <TextView
+                                android:id="@+id/textView7"
+                                android:layout_width="150dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="1dp"
+                                android:background="@color/sub_head"
+                                android:padding="4dp"
+                                android:text="Time-In"
+                                android:textAppearance="?android:attr/textAppearanceMedium"
+                                android:textColor="@color/header_text" />
+
+                            <TextView
+                                android:id="@+id/textView8"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:background="@color/sub_head"
+                                android:padding="4dp"
+                                android:text="Status"
+                                android:textAppearance="?android:attr/textAppearanceMedium"
+                                android:textColor="@color/header_text" />
+
+                        </LinearLayout>
 
                         <ScrollView
                             android:id="@+id/scroll_take_layout"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_weight="1" >
+                            android:layout_weight="1.5" >
 
                             <LinearLayout
+                                android:id="@+id/takeAwayLayout"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:orientation="vertical" >
+
                             </LinearLayout>
                         </ScrollView>
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="40dp"
+                            android:layout_height="30dp"
                             android:background="@color/sub_head"
                             android:gravity="center_vertical"
                             android:orientation="vertical" >
@@ -114,7 +167,8 @@
                                 android:paddingLeft="8dp"
                                 android:text="Queue"
                                 android:textAppearance="?android:attr/textAppearanceLarge"
-                                android:textColor="@color/header_text" />
+                                android:textColor="@color/header_text"
+                                android:textStyle="bold" />
 
                         </LinearLayout>
 
@@ -129,8 +183,37 @@
                                 android:layout_height="match_parent"
                                 android:layout_marginRight="1dp"
                                 android:layout_weight="1"
-                                android:background="@color/list_background"
                                 android:orientation="vertical" >
+
+                                <TextView
+                                    android:id="@+id/textViewTakeNo"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@color/background"
+                                    android:gravity="center"
+                                    android:textAppearance="?android:attr/textAppearanceLarge"
+                                    android:textSize="48sp"
+                                    android:textStyle="bold" />
+
+                                <LinearLayout
+                                    android:id="@+id/queueALayout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="1dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical" >
+
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/textViewSumQA"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@color/list_background"
+                                    android:gravity="center"
+                                    android:text="A=0"
+                                    android:textAppearance="?android:attr/textAppearanceLarge"
+                                    android:textStyle="bold" />
 
                             </LinearLayout>
 
@@ -139,58 +222,37 @@
                                 android:layout_height="match_parent"
                                 android:layout_marginRight="1dp"
                                 android:layout_weight="1"
-                                android:background="@color/list_background"
                                 android:orientation="vertical" >
 
-                            </LinearLayout>
+                                <TextView
+                                    android:id="@+id/textViewCallB"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@color/background"
+                                    android:gravity="center"
+                                    android:textAppearance="?android:attr/textAppearanceLarge"
+                                    android:textSize="48sp"
+                                    android:textStyle="bold" />
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_marginRight="1dp"
-                                android:layout_weight="1"
-                                android:background="@color/list_background"
-                                android:orientation="vertical" >
+                                <LinearLayout
+                                    android:id="@+id/queueBLayout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="1dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical" >
 
-                            </LinearLayout>
+                                </LinearLayout>
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_marginRight="1dp"
-                                android:layout_weight="1"
-                                android:background="@color/list_background"
-                                android:orientation="vertical" >
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_marginRight="1dp"
-                                android:layout_weight="1"
-                                android:background="@color/list_background"
-                                android:orientation="vertical" >
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_marginRight="1dp"
-                                android:layout_weight="1"
-                                android:background="@color/list_background"
-                                android:orientation="vertical" >
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_marginRight="1dp"
-                                android:layout_weight="1"
-                                android:background="@color/list_background"
-                                android:orientation="vertical" >
+                                <TextView
+                                    android:id="@+id/textViewSumQB"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@color/list_background"
+                                    android:gravity="center"
+                                    android:text="B=0"
+                                    android:textAppearance="?android:attr/textAppearanceLarge"
+                                    android:textStyle="bold" />
 
                             </LinearLayout>
 
@@ -198,8 +260,37 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
-                                android:background="@color/list_background"
                                 android:orientation="vertical" >
+
+                                <TextView
+                                    android:id="@+id/textViewCallC"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@color/background"
+                                    android:gravity="center"
+                                    android:textAppearance="?android:attr/textAppearanceLarge"
+                                    android:textSize="48sp"
+                                    android:textStyle="bold" />
+
+                                <LinearLayout
+                                    android:id="@+id/queueCLayout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="1dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical" >
+
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/textViewSumQC"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@color/list_background"
+                                    android:gravity="center"
+                                    android:text="C=0"
+                                    android:textAppearance="?android:attr/textAppearanceLarge"
+                                    android:textStyle="bold" />
 
                             </LinearLayout>
 

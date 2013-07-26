@@ -8,7 +8,8 @@ public class SqliteHelper extends SQLiteOpenHelper {
 	private static String dbName = "queue";
 
 	private static final String createTbConfig = "CREATE TABLE config (" +
-			" server_ip INTEGER, " + 
+			" shop_id INTEGER, " +
+			" server_ip TEXT, " + 
 			" service_name TEXT, " +
 			" video_path TEXT, " +
 			" logo_path TEXT );";

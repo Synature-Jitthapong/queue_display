@@ -1,5 +1,9 @@
 package com.syn.queuedisplay;
 
+import java.util.List;
+
+import syn.pos.data.model.QueueDisplayInfo;
+
 import com.j1tth4.mobile.core.util.MyMediaPlayer;
 import com.syn.queuedisplay.util.SystemUiHider;
 
@@ -11,6 +15,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings.Secure;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +26,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -57,11 +63,29 @@ public class QueueDisplayActivity extends Activity{
 	 * The instance of the {@link SystemUiHider} for this activity.
 	 */
 	private SystemUiHider mSystemUiHider;
+	private String deviceCode = "";
+	private String serviceUrl = "";
+	private boolean isRun = true;
+	private Handler handler;
+	private Handler handler2;
 
 	private QueueData queueData;
 	private SurfaceView surface;
 	private SurfaceHolder surfaceHolder;
 	private TextView tvMarquee;
+	
+
+	private LinearLayout takeAwayLayout;
+	private LinearLayout layoutA;
+	private LinearLayout layoutB;
+	private LinearLayout layoutC;
+	private TextView tvCallA;
+	private TextView tvCallB;
+	private TextView tvCallC;
+	
+	private TextView tvSumQA;
+	private TextView tvSumQB;
+	private TextView tvSumQC;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,14 +95,35 @@ public class QueueDisplayActivity extends Activity{
 		final View contentView = findViewById(R.id.queue_layout);
 		surface = (SurfaceView) findViewById(R.id.surfaceView1);
 		tvMarquee = (TextView) findViewById(R.id.textViewMarquee);
+		takeAwayLayout = (LinearLayout) findViewById(R.id.takeAwayLayout);
+		layoutA = (LinearLayout) findViewById(R.id.queueALayout);
+		layoutB = (LinearLayout) findViewById(R.id.queueBLayout);
+		layoutC = (LinearLayout) findViewById(R.id.queueCLayout);
+		tvCallA = (TextView) findViewById(R.id.textViewTakeNo);
+		tvCallB = (TextView) findViewById(R.id.textViewCallB);
+		tvCallC = (TextView) findViewById(R.id.textViewCallC);
+		tvSumQB = (TextView) findViewById(R.id.textViewSumQB);
+		tvSumQA = (TextView) findViewById(R.id.textViewSumQA);
+		tvSumQC = (TextView) findViewById(R.id.textViewSumQC);
+		
 		tvMarquee.setSelected(true);
 		
 		surfaceHolder = surface.getHolder();
-
+		
+		deviceCode = Secure.getString(this.getContentResolver(),
+				Secure.ANDROID_ID);
+		
 		readQueueData();
 		
 		MyMediaPlayer mMediaPlayer = 
 				new MyMediaPlayer(QueueDisplayActivity.this, surface, surfaceHolder, queueData.getVideoPath());
+		
+
+		// update queue
+		handler = new Handler();
+		handler.post(updateQueue);
+		handler2 = new Handler();
+		handler2.post(updateQueueTake);
 		
 		// Set up an instance of SystemUiHider to control the system UI for
 		// this activity.
@@ -120,21 +165,61 @@ public class QueueDisplayActivity extends Activity{
 		delayedHide(100);
 	}
 
+	// thread update queue
+	private Runnable updateQueue = new Runnable() {
+
+		@Override
+		public void run() {
+			if (isRun) {
+				try {
+					createQueue();
+					handler.postDelayed(this, 30000);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+	};
+	
+	// thread update queue take
+	private Runnable updateQueueTake = new Runnable() {
+
+		@Override
+		public void run() {
+			if (isRun) {
+				try {
+					createTakeAway();
+					handler2.postDelayed(this, 30000);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+	};
+	
 	private void readQueueData(){
 		QueueDisplayData config = 
 				new QueueDisplayData(QueueDisplayActivity.this);
 		queueData = config.readConfig();
+		
+		serviceUrl = "http://" + queueData.getServerIp() + "/" + queueData.getServiceName() + "/ws_mpos.asmx";
 	}
 	
 	private void popupSetting(){
 		LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
 		final View v = inflater.inflate(R.layout.activity_setting, null);
+		final EditText txtShopId = (EditText) v.findViewById(R.id.editText4);
 		final EditText txtIp = (EditText) v.findViewById(R.id.editText1);
 		final EditText txtService = (EditText) v.findViewById(R.id.editText2);
 		final EditText txtVideoDir = (EditText) v.findViewById(R.id.editText3);
 		final Button btnCancel = (Button) v.findViewById(R.id.button1);
 		final Button btnOk = (Button) v.findViewById(R.id.button2);
 		
+		txtShopId.setText(Integer.toString(queueData.getShopId()));
 		txtIp.setText(queueData.getServerIp());
 		txtService.setText(queueData.getServiceName());
 		txtVideoDir.setText(queueData.getVideoPath());
@@ -157,27 +242,31 @@ public class QueueDisplayActivity extends Activity{
 
 			@Override
 			public void onClick(View v) {
+				String shopId = txtShopId.getText().toString();
 				String ip = txtIp.getText().toString();
 				String service = txtService.getText().toString();
 				String videoDir = txtVideoDir.getText().toString();
 				
-				if(!ip.equals("") && !service.equals("")){
+				if(!shopId.equals("") && !ip.equals("") && !service.equals("")){
 					QueueDisplayData config = 
 							new QueueDisplayData(QueueDisplayActivity.this);
 					
-					config.addConfig(ip, service, videoDir, "");
+					config.addConfig(Integer.parseInt(shopId), ip, service, videoDir, "");
 					
 					d.dismiss();
 					
+					QueueDisplayActivity.this.finish();
 					Intent intent = 
 							new Intent(QueueDisplayActivity.this, QueueDisplayActivity.class);
 					QueueDisplayActivity.this.startActivity(intent);
 				}else{
 					String errMsg = "";
 					if(ip.equals(""))
-						errMsg = "Please enter IP Address";
+						errMsg = "Please enter IP Address.";
+					else if (shopId.equals(""))
+						errMsg = "Please enter Shop ID.";
 					else
-						errMsg = "Please enter Web service";
+						errMsg = "Please enter Web service.";
 					
 					new AlertDialog.Builder(QueueDisplayActivity.this)
 					.setTitle("Error")
@@ -236,5 +325,125 @@ public class QueueDisplayActivity extends Activity{
 	private void delayedHide(int delayMillis) {
 		mHideHandler.removeCallbacks(mHideRunnable);
 		mHideHandler.postDelayed(mHideRunnable, delayMillis);
+	}
+	
+	private void createQueue(){
+		final LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
+		
+		// call service
+		new QueueDisplayService(QueueDisplayActivity.this, queueData.getShopId(), deviceCode, 
+				new QueueDisplayService.Callback() {
+			
+			@Override
+			public void onSuccess(QueueDisplayInfo qInfo) {
+
+				layoutA.removeAllViews();
+				layoutB.removeAllViews();
+				layoutC.removeAllViews();
+				
+				int totalQa = 0;
+				int totalQb = 0;
+				int totalQc = 0;
+				
+				for(QueueDisplayInfo.QueueInfo qData : qInfo.xListQueueInfo){
+					if(qData.getiQueueGroupID() == 1){
+						View vA = inflater.inflate(R.layout.queue_template, null);
+						TextView tvQ = (TextView) vA.findViewById(R.id.textViewQueue);
+						tvQ.setText(qData.getSzQueueName());
+						layoutA.addView(vA);
+						
+						totalQa++;
+					}
+					
+					if(qData.getiQueueGroupID() == 2){
+						View vB = inflater.inflate(R.layout.queue_template, null);
+						TextView tvQ = (TextView) vB.findViewById(R.id.textViewQueue);
+						tvQ.setText(qData.getSzQueueName());
+						layoutB.addView(vB);
+						
+						totalQb++;
+					}
+					
+					if(qData.getiQueueGroupID() == 3){
+						View vC = inflater.inflate(R.layout.queue_template, null);
+						TextView tvQ = (TextView) vC.findViewById(R.id.textViewQueue);
+						tvQ.setText(qData.getSzQueueName());
+						layoutC.addView(vC);
+						
+						totalQc++;
+					}
+				}
+				
+				tvSumQA.setText("A=" + Integer.toString(totalQa));
+				tvSumQB.setText("B=" + Integer.toString(totalQb));
+				tvSumQC.setText("C=" + Integer.toString(totalQc));
+				
+				tvCallA.setText(qInfo.getSzCurQueueGroupA());
+				tvCallB.setText(qInfo.getSzCurQueueGroupB());
+				tvCallC.setText(qInfo.getSzCurQueueGroupC());
+			}
+			
+			@Override
+			public void onProgress() {
+				
+			}
+			
+			@Override
+			public void onError(String msg) {
+				isRun = false;
+				popup("Error", msg);
+			}
+		}).execute(serviceUrl);
+	}
+	
+	private void createTakeAway(){
+		
+		new QueueTakeAwayService(QueueDisplayActivity.this, queueData.getShopId(), deviceCode, 
+				new QueueTakeAwayService.Callback() {
+			
+			@Override
+			public void onSuccess(List<TakeAwayData> takeAwayLst) {
+
+				takeAwayLayout.removeAllViews();
+				
+				LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
+				
+				int i = 0;
+				for(TakeAwayData takeAwayData : takeAwayLst){
+					View v = inflater.inflate(R.layout.take_away_template, null);
+					TextView tvName = (TextView) v.findViewById(R.id.textViewTakeName);
+					TextView tvTimeIn = (TextView) v.findViewById(R.id.textViewTakeTimeIn);
+					TextView tvStatus = (TextView) v.findViewById(R.id.textViewTakeStatus);
+					TextView tvNo = (TextView) v.findViewById(R.id.textViewTakeNo);
+					
+					tvNo.setText(Integer.toString(i + 1));
+					tvName.setText(takeAwayData.getSzTransName());
+					tvTimeIn.setText(takeAwayData.getSzStartDateTime());
+					tvStatus.setText(takeAwayData.getSzKdsStatusName());
+
+					takeAwayLayout.addView(v);
+					i++;
+				}
+			}
+			
+			@Override
+			public void onProgress() {
+				
+			}
+			
+			@Override
+			public void onError(String msg) {
+				isRun = false;
+				popup("Error", msg);
+			}
+		}).execute(serviceUrl);
+		
+	}
+	
+	private void popup(String title, String msg){
+		new AlertDialog.Builder(QueueDisplayActivity.this)
+		.setTitle(title)
+		.setMessage(msg)
+		.show();
 	}
 }
