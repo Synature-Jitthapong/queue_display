@@ -25,6 +25,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -76,6 +77,7 @@ public class QueueDisplayActivity extends Activity{
 	
 
 	private LinearLayout takeAwayLayout;
+	private LinearLayout queueLayout;
 	private LinearLayout layoutA;
 	private LinearLayout layoutB;
 	private LinearLayout layoutC;
@@ -96,6 +98,7 @@ public class QueueDisplayActivity extends Activity{
 		surface = (SurfaceView) findViewById(R.id.surfaceView1);
 		tvMarquee = (TextView) findViewById(R.id.textViewMarquee);
 		takeAwayLayout = (LinearLayout) findViewById(R.id.takeAwayLayout);
+		queueLayout = (LinearLayout) findViewById(R.id.layoutQueue);
 		layoutA = (LinearLayout) findViewById(R.id.queueALayout);
 		layoutB = (LinearLayout) findViewById(R.id.queueBLayout);
 		layoutC = (LinearLayout) findViewById(R.id.queueCLayout);
@@ -206,23 +209,31 @@ public class QueueDisplayActivity extends Activity{
 				new QueueDisplayData(QueueDisplayActivity.this);
 		queueData = config.readConfig();
 		
+		if(queueData.isEnableQueue()){
+			queueLayout.setVisibility(View.VISIBLE);
+		}else{
+			queueLayout.setVisibility(View.GONE);
+		}
+		
 		serviceUrl = "http://" + queueData.getServerIp() + "/" + queueData.getServiceName() + "/ws_mpos.asmx";
 	}
 	
 	private void popupSetting(){
 		LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
 		final View v = inflater.inflate(R.layout.activity_setting, null);
-		final EditText txtShopId = (EditText) v.findViewById(R.id.editText4);
-		final EditText txtIp = (EditText) v.findViewById(R.id.editText1);
-		final EditText txtService = (EditText) v.findViewById(R.id.editText2);
-		final EditText txtVideoDir = (EditText) v.findViewById(R.id.editText3);
-		final Button btnCancel = (Button) v.findViewById(R.id.button1);
-		final Button btnOk = (Button) v.findViewById(R.id.button2);
+		final EditText txtShopId = (EditText) v.findViewById(R.id.editTextShopId);
+		final EditText txtIp = (EditText) v.findViewById(R.id.editTextIp);
+		final EditText txtService = (EditText) v.findViewById(R.id.editTextService);
+		final EditText txtVideoDir = (EditText) v.findViewById(R.id.editTextVideoDir);
+		final CheckBox chkEnableQueue = (CheckBox) v.findViewById(R.id.checkBoxQueue);
+		final Button btnCancel = (Button) v.findViewById(R.id.buttonCancel);
+		final Button btnOk = (Button) v.findViewById(R.id.buttonOk);
 		
 		txtShopId.setText(Integer.toString(queueData.getShopId()));
 		txtIp.setText(queueData.getServerIp());
 		txtService.setText(queueData.getServiceName());
 		txtVideoDir.setText(queueData.getVideoPath());
+		chkEnableQueue.setChecked(queueData.isEnableQueue());
 		
 		final Dialog d = new Dialog(QueueDisplayActivity.this);
 		d.setContentView(v);
@@ -251,7 +262,8 @@ public class QueueDisplayActivity extends Activity{
 					QueueDisplayData config = 
 							new QueueDisplayData(QueueDisplayActivity.this);
 					
-					config.addConfig(Integer.parseInt(shopId), ip, service, videoDir, "");
+					config.addConfig(Integer.parseInt(shopId), ip, service, videoDir, "", 
+							chkEnableQueue.isChecked());
 					
 					d.dismiss();
 					

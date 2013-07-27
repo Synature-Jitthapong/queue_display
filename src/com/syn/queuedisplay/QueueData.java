@@ -6,7 +6,14 @@ public class QueueData {
 	private String serviceName;
 	private String videoPath;
 	private String logoPath;
+	private boolean isEnableQueue;
 	
+	public boolean isEnableQueue() {
+		return isEnableQueue;
+	}
+	public void setEnableQueue(boolean isEnableQueue) {
+		this.isEnableQueue = isEnableQueue;
+	}
 	public int getShopId() {
 		return shopId;
 	}

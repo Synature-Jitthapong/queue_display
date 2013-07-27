@@ -2,31 +2,54 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".SettingActivity" >
 
-    <EditText
-        android:id="@+id/editText2"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/editText1"
-        android:ems="10"
-        android:hint="Web service" />
+        android:layout_margin="8dp"
+        android:orientation="vertical" >
 
-    <EditText
-        android:id="@+id/editText3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/editText2"
-        android:ems="10"
-        android:hint="Video Dir" />
+        <EditText
+            android:id="@+id/editTextShopId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Shop ID"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/editTextIp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="IP Address" >
+
+            <requestFocus />
+        </EditText>
+
+        <EditText
+            android:id="@+id/editTextService"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Web service" />
+
+        <EditText
+            android:id="@+id/editTextVideoDir"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Video Dir" />
+
+        <CheckBox
+            android:id="@+id/checkBoxQueue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enable queue" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout1"
@@ -37,7 +60,7 @@
         android:layout_alignParentRight="true" >
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/buttonCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -45,36 +68,12 @@
             android:textAppearance="?android:attr/textAppearanceMediumInverse" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/buttonOk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Ok"
             android:textAppearance="?android:attr/textAppearanceMediumInverse" />
     </LinearLayout>
-
-    <EditText
-        android:id="@+id/editText4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:ems="10"
-        android:hint="Shop ID"
-        android:inputType="number" >
-
-        <requestFocus />
-    </EditText>
-
-    <EditText
-        android:id="@+id/editText1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/editText4"
-        android:ems="10"
-        android:hint="IP Address" />
 
 </RelativeLayout>

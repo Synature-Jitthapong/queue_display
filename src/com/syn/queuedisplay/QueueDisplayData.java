@@ -34,19 +34,22 @@ public class QueueDisplayData {
 				config.setServiceName(cursor.getString(cursor.getColumnIndex("service_name")));
 				config.setVideoPath(cursor.getString(cursor.getColumnIndex("video_path")));
 				config.setLogoPath(cursor.getString(cursor.getColumnIndex("logo_path")));
+				config.setEnableQueue(cursor.getInt(cursor.getColumnIndex("is_enable_queue")) == 1 ? true : false);
 			}while(cursor.moveToNext());
 		}
 		close();
 		return config;
 	}
 	
-	public void addConfig(int shopId, String ip, String serviceName, String videoPath, String logoPath){
+	public void addConfig(int shopId, String ip, String serviceName, String videoPath, String logoPath,
+			boolean isEnableQueue){
 		ContentValues cv = new ContentValues();
 		cv.put("shop_id", shopId);
 		cv.put("server_ip", ip);
 		cv.put("service_name", serviceName);
 		cv.put("video_path", videoPath);
 		cv.put("logo_path", logoPath);
+		cv.put("is_enable_queue", isEnableQueue == true ? 1 : 0);
 		
 		open();
 		db.execSQL("DELETE FROM config");
