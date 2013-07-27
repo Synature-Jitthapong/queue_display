@@ -27,7 +27,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/head"
+            android:background="@color/head_dark"
             android:gravity="center_vertical" >
 
             <ImageView
@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleType="fitXY"
-                android:src="@drawable/piz_logo" />
+                android:src="@drawable/header_logo" />
 
         </LinearLayout>
 
