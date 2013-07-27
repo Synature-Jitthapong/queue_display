@@ -11,11 +11,13 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings.Secure;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -66,9 +68,10 @@ public class QueueDisplayActivity extends Activity{
 	private SystemUiHider mSystemUiHider;
 	private String deviceCode = "";
 	private String serviceUrl = "";
-	private boolean isRun = true;
-	private Handler handler;
-	private Handler handler2;
+	private boolean isTakeRun = false;
+	private boolean isQueueRun = false;
+	private Handler handlerQueue;
+	private Handler handlerTake;
 
 	private QueueData queueData;
 	private SurfaceView surface;
@@ -76,6 +79,7 @@ public class QueueDisplayActivity extends Activity{
 	private TextView tvMarquee;
 	
 
+	private LinearLayout queueTakeLayout;
 	private LinearLayout takeAwayLayout;
 	private LinearLayout queueLayout;
 	private LinearLayout layoutA;
@@ -98,6 +102,7 @@ public class QueueDisplayActivity extends Activity{
 		surface = (SurfaceView) findViewById(R.id.surfaceView1);
 		tvMarquee = (TextView) findViewById(R.id.textViewMarquee);
 		takeAwayLayout = (LinearLayout) findViewById(R.id.takeAwayLayout);
+		queueTakeLayout = (LinearLayout) findViewById(R.id.layoutQueueTake);
 		queueLayout = (LinearLayout) findViewById(R.id.layoutQueue);
 		layoutA = (LinearLayout) findViewById(R.id.queueALayout);
 		layoutB = (LinearLayout) findViewById(R.id.queueBLayout);
@@ -111,22 +116,31 @@ public class QueueDisplayActivity extends Activity{
 		
 		tvMarquee.setSelected(true);
 		
-		surfaceHolder = surface.getHolder();
-		
 		deviceCode = Secure.getString(this.getContentResolver(),
 				Secure.ANDROID_ID);
 		
 		readQueueData();
 		
-		MyMediaPlayer mMediaPlayer = 
-				new MyMediaPlayer(QueueDisplayActivity.this, surface, surfaceHolder, queueData.getVideoPath());
+		surfaceHolder = surface.getHolder();
+		new MyMediaPlayer(QueueDisplayActivity.this, surface, surfaceHolder, queueData.getVideoPath());
 		
-
 		// update queue
-		handler = new Handler();
-		handler.post(updateQueue);
-		handler2 = new Handler();
-		handler2.post(updateQueueTake);
+		if(queueData.isEnableQueue()){
+			queueLayout.setVisibility(View.VISIBLE);
+			handlerQueue = new Handler();
+			handlerQueue.post(updateQueue);
+			isQueueRun = true;
+		}else{
+			queueLayout.setVisibility(View.GONE);
+		}
+		if(queueData.isEnableTake()){
+			queueTakeLayout.setVisibility(View.VISIBLE);
+			handlerTake = new Handler();
+			handlerTake.post(updateQueueTake);
+			isTakeRun = true;
+		}else{
+			queueTakeLayout.setVisibility(View.GONE);
+		}
 		
 		// Set up an instance of SystemUiHider to control the system UI for
 		// this activity.
@@ -173,10 +187,10 @@ public class QueueDisplayActivity extends Activity{
 
 		@Override
 		public void run() {
-			if (isRun) {
+			if (isQueueRun) {
 				try {
 					createQueue();
-					handler.postDelayed(this, 5000);
+					handlerQueue.postDelayed(this, queueData.getUpdateInterval());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -191,10 +205,10 @@ public class QueueDisplayActivity extends Activity{
 
 		@Override
 		public void run() {
-			if (isRun) {
+			if (isTakeRun) {
 				try {
 					createTakeAway();
-					handler2.postDelayed(this, 5000);
+					handlerTake.postDelayed(this,  queueData.getUpdateInterval());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -209,12 +223,6 @@ public class QueueDisplayActivity extends Activity{
 				new QueueDisplayData(QueueDisplayActivity.this);
 		queueData = config.readConfig();
 		
-		if(queueData.isEnableQueue()){
-			queueLayout.setVisibility(View.VISIBLE);
-		}else{
-			queueLayout.setVisibility(View.GONE);
-		}
-		
 		serviceUrl = "http://" + queueData.getServerIp() + "/" + queueData.getServiceName() + "/ws_mpos.asmx";
 	}
 	
@@ -226,14 +234,42 @@ public class QueueDisplayActivity extends Activity{
 		final EditText txtService = (EditText) v.findViewById(R.id.editTextService);
 		final EditText txtVideoDir = (EditText) v.findViewById(R.id.editTextVideoDir);
 		final CheckBox chkEnableQueue = (CheckBox) v.findViewById(R.id.checkBoxQueue);
+		final CheckBox chkEnableTake = (CheckBox) v.findViewById(R.id.checkBoxTake);
+		final EditText txtInterval = (EditText) v.findViewById(R.id.editTextInterval);
+		final Button btnIntervalMinus = (Button) v.findViewById(R.id.buttonIntervalMinus);
+		final Button btnIntervalPlus = (Button) v.findViewById(R.id.buttonIntervalPlus);
 		final Button btnCancel = (Button) v.findViewById(R.id.buttonCancel);
 		final Button btnOk = (Button) v.findViewById(R.id.buttonOk);
 		
-		txtShopId.setText(Integer.toString(queueData.getShopId()));
+		int shopId = queueData.getShopId();
+		String strShopId = shopId != 0 ? Integer.toString(shopId) : "";
+		
+		txtShopId.setText(strShopId);
 		txtIp.setText(queueData.getServerIp());
 		txtService.setText(queueData.getServiceName());
 		txtVideoDir.setText(queueData.getVideoPath());
 		chkEnableQueue.setChecked(queueData.isEnableQueue());
+		chkEnableTake.setChecked(queueData.isEnableTake());
+		txtInterval.setText(Integer.toString(queueData.getUpdateInterval() / 1000));
+		
+		btnIntervalMinus.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				int interval = Integer.parseInt(txtInterval.getText().toString());
+				txtInterval.setText(Integer.toString(--interval));
+			}
+			
+		});
+		btnIntervalPlus.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				int interval = Integer.parseInt(txtInterval.getText().toString());
+				txtInterval.setText(Integer.toString(++interval));
+			}
+			
+		});
 		
 		final Dialog d = new Dialog(QueueDisplayActivity.this);
 		d.setContentView(v);
@@ -257,15 +293,26 @@ public class QueueDisplayActivity extends Activity{
 				String ip = txtIp.getText().toString();
 				String service = txtService.getText().toString();
 				String videoDir = txtVideoDir.getText().toString();
+				int interval = 1;
+				
+				try {
+					interval = Integer.parseInt(txtInterval.getText().toString()) * 1000;
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				if(!shopId.equals("") && !ip.equals("") && !service.equals("")){
 					QueueDisplayData config = 
 							new QueueDisplayData(QueueDisplayActivity.this);
 					
-					config.addConfig(Integer.parseInt(shopId), ip, service, videoDir, "", 
-							chkEnableQueue.isChecked());
+					config.addConfig(Integer.parseInt(shopId), ip, service, interval, videoDir, "", 
+							chkEnableQueue.isChecked(), chkEnableTake.isChecked());
 					
 					d.dismiss();
+					
+					isTakeRun = false;
+					isQueueRun = false;
 					
 					QueueDisplayActivity.this.finish();
 					Intent intent = 
@@ -273,16 +320,24 @@ public class QueueDisplayActivity extends Activity{
 					QueueDisplayActivity.this.startActivity(intent);
 				}else{
 					String errMsg = "";
-					if(ip.equals(""))
-						errMsg = "Please enter IP Address.";
-					else if (shopId.equals(""))
+					
+					if (shopId.equals(""))
 						errMsg = "Please enter Shop ID.";
+					else if(ip.equals(""))
+						errMsg = "Please enter IP Address.";
 					else
 						errMsg = "Please enter Web service.";
 					
 					new AlertDialog.Builder(QueueDisplayActivity.this)
 					.setTitle("Error")
 					.setMessage(errMsg)
+					.setNeutralButton("Close", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							
+						}
+					})
 					.show();
 				}
 			}
@@ -340,6 +395,7 @@ public class QueueDisplayActivity extends Activity{
 	}
 	
 	private void createQueue(){
+		Log.i("queue", "call queue " + queueData.getUpdateInterval());
 		final LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
 		
 		// call service
@@ -409,7 +465,7 @@ public class QueueDisplayActivity extends Activity{
 	}
 	
 	private void createTakeAway(){
-		
+		Log.i("take away queue", "call takeaway queue " + queueData.getUpdateInterval());
 		new QueueTakeAwayService(QueueDisplayActivity.this, queueData.getShopId(), deviceCode, 
 				new QueueTakeAwayService.Callback() {
 			

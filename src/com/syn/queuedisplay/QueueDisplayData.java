@@ -35,21 +35,25 @@ public class QueueDisplayData {
 				config.setVideoPath(cursor.getString(cursor.getColumnIndex("video_path")));
 				config.setLogoPath(cursor.getString(cursor.getColumnIndex("logo_path")));
 				config.setEnableQueue(cursor.getInt(cursor.getColumnIndex("is_enable_queue")) == 1 ? true : false);
+				config.setEnableTake(cursor.getInt(cursor.getColumnIndex("is_enable_take")) == 1 ? true : false);
+				config.setUpdateInterval(cursor.getInt(cursor.getColumnIndex("update_interval")));
 			}while(cursor.moveToNext());
 		}
 		close();
 		return config;
 	}
 	
-	public void addConfig(int shopId, String ip, String serviceName, String videoPath, String logoPath,
-			boolean isEnableQueue){
+	public void addConfig(int shopId, String ip, String serviceName, int updateInterval,
+			String videoPath, String logoPath, boolean isEnableQueue, boolean isEnableTake){
 		ContentValues cv = new ContentValues();
 		cv.put("shop_id", shopId);
 		cv.put("server_ip", ip);
 		cv.put("service_name", serviceName);
+		cv.put("update_interval", updateInterval);
 		cv.put("video_path", videoPath);
 		cv.put("logo_path", logoPath);
 		cv.put("is_enable_queue", isEnableQueue == true ? 1 : 0);
+		cv.put("is_enable_take", isEnableTake == true ? 1 : 0);
 		
 		open();
 		db.execSQL("DELETE FROM config");

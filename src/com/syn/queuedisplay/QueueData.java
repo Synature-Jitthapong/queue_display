@@ -7,7 +7,21 @@ public class QueueData {
 	private String videoPath;
 	private String logoPath;
 	private boolean isEnableQueue;
+	private boolean isEnableTake;
+	private int updateInterval;
 	
+	public boolean isEnableTake() {
+		return isEnableTake;
+	}
+	public void setEnableTake(boolean isEnableTake) {
+		this.isEnableTake = isEnableTake;
+	}
+	public int getUpdateInterval() {
+		return updateInterval;
+	}
+	public void setUpdateInterval(int updateInterval) {
+		this.updateInterval = updateInterval;
+	}
 	public boolean isEnableQueue() {
 		return isEnableQueue;
 	}

@@ -11,9 +11,11 @@ public class SqliteHelper extends SQLiteOpenHelper {
 			" shop_id INTEGER DEFAULT 0, " +
 			" server_ip TEXT, " + 
 			" service_name TEXT, " +
+			" update_interval INTEGER DEFAULT 0, " +
 			" video_path TEXT, " +
 			" logo_path TEXT, " +
-			" is_enable_queue INTEGER DEFAULT 0 );";
+			" is_enable_queue INTEGER DEFAULT 0, " +
+			" is_enable_take INTEGER DEFAULT 1 );";
 
 	public SqliteHelper(Context context) {
 		super(context, dbName, null, 1);
