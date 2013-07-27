@@ -28,7 +28,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/head_dark"
-            android:gravity="center_vertical" >
+            android:gravity="center_vertical"
+            android:paddingRight="8dp" >
 
             <ImageView
                 android:id="@+id/imageView1"
@@ -36,6 +37,15 @@
                 android:layout_height="wrap_content"
                 android:scaleType="fitXY"
                 android:src="@drawable/header_logo" />
+
+            <DigitalClock
+                android:id="@+id/digitalClock1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right|center_vertical"
+                android:text="DigitalClock"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
         </LinearLayout>
 
@@ -77,14 +87,6 @@
                             android:text="Pickup Queue"
                             android:textAppearance="?android:attr/textAppearanceLarge"
                             android:textStyle="bold" />
-
-                        <DigitalClock
-                            android:id="@+id/digitalClock1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="DigitalClock"
-                            android:textAppearance="?android:attr/textAppearanceLarge" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -186,7 +188,7 @@
                             android:orientation="vertical" >
 
                             <TextView
-                                android:id="@+id/textViewTakeNo"
+                                android:id="@+id/textViewCallA"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="1dp"
@@ -310,6 +312,17 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_weight="1.5"
+                    android:background="@color/sub_head_dark"
+                    android:gravity="right|center_vertical"
+                    android:orientation="vertical"
+                    android:padding="8dp" >
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:orientation="vertical" >
@@ -322,8 +335,9 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" >
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:visibility="gone" >
 
                     <TextView
                         android:id="@+id/textViewMarquee"

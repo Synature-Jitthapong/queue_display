@@ -107,7 +107,7 @@ public class QueueDisplayActivity extends Activity{
 		layoutA = (LinearLayout) findViewById(R.id.queueALayout);
 		layoutB = (LinearLayout) findViewById(R.id.queueBLayout);
 		layoutC = (LinearLayout) findViewById(R.id.queueCLayout);
-		tvCallA = (TextView) findViewById(R.id.textViewTakeNo);
+		tvCallA = (TextView) findViewById(R.id.textViewCallA);
 		tvCallB = (TextView) findViewById(R.id.textViewCallB);
 		tvCallC = (TextView) findViewById(R.id.textViewCallC);
 		tvSumQB = (TextView) findViewById(R.id.textViewSumQB);
@@ -250,7 +250,7 @@ public class QueueDisplayActivity extends Activity{
 		txtVideoDir.setText(queueData.getVideoPath());
 		chkEnableQueue.setChecked(queueData.isEnableQueue());
 		chkEnableTake.setChecked(queueData.isEnableTake());
-		txtInterval.setText(Integer.toString(queueData.getUpdateInterval() / 1000));
+		txtInterval.setText(Integer.toString((queueData.getUpdateInterval() == 0 ? 30000 : queueData.getUpdateInterval()) / 1000));
 		
 		btnIntervalMinus.setOnClickListener(new OnClickListener(){
 
