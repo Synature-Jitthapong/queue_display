@@ -121,7 +121,7 @@ public class QueueDisplayActivity extends Activity{
 
 		// update queue
 		handler = new Handler();
-		//handler.post(updateQueue);
+		handler.post(updateQueue);
 		handler2 = new Handler();
 		handler2.post(updateQueueTake);
 		

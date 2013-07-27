@@ -10,6 +10,6 @@
     <color name="head_dark">#FF202020</color>
     <color name="sub_head_dark">#FF2F3235</color>
     <color name="background_dark">#FF414141</color>
-    <color name="list_background_dark">#FF2F3235</color>
+    <color name="list_background_dark">#FF383838</color>
 
 </resources>
