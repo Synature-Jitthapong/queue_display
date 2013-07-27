@@ -390,8 +390,8 @@ public class QueueDisplayActivity extends Activity{
 			
 			@Override
 			public void onError(String msg) {
-				isRun = false;
-				popup("Error", msg);
+//				isRun = false;
+//				popup("Error", msg);
 			}
 		}).execute(serviceUrl);
 	}
@@ -437,8 +437,8 @@ public class QueueDisplayActivity extends Activity{
 			
 			@Override
 			public void onError(String msg) {
-				isRun = false;
-				popup("Error", msg);
+//				isRun = false;
+//				popup("Error", msg);
 			}
 		}).execute(serviceUrl);
 		
