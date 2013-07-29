@@ -127,7 +127,7 @@ public class QueueDisplayActivity extends Activity{
 		readQueueData();
 		
 		surfaceHolder = surface.getHolder();
-		new MyMediaPlayer(QueueDisplayActivity.this, surface, surfaceHolder, queueData.getVideoPath());
+		new MyMediaPlayer(QueueDisplayActivity.this, surfaceHolder, queueData.getVideoPath());
 		
 		// update queue
 		if(queueData.isEnableQueue()){
@@ -489,7 +489,7 @@ public class QueueDisplayActivity extends Activity{
 					TextView tvNo = (TextView) v.findViewById(R.id.textViewTakeNo);
 
 					SimpleDateFormat dateFormat = new SimpleDateFormat(
-							"dd/MM/yy HH:mm");
+							"dd/MM/yy HH:mm:ss");
 					SimpleDateFormat timeFormat = new SimpleDateFormat(
 							"mm:ss");
 					Date dNow = new Date();
@@ -498,7 +498,14 @@ public class QueueDisplayActivity extends Activity{
 						dStart = dateFormat.parse(takeAwayData
 								.getSzStartDateTime());
 					} catch (ParseException e) {
-						// TODO Auto-generated catch block
+						dateFormat.applyLocalizedPattern("dd/MM/yy HH:mm");
+						try {
+							dStart = dateFormat.parse(takeAwayData
+									.getSzStartDateTime());
+						} catch (ParseException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 						e.printStackTrace();
 					}
 
