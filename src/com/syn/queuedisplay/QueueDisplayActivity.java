@@ -77,7 +77,8 @@ public class QueueDisplayActivity extends Activity{
 	private boolean isQueueRun = false;
 	private Handler handlerQueue;
 	private Handler handlerTake;
-
+	private MyMediaPlayer myMediaPlayer;
+	
 	private QueueData queueData;
 	private SurfaceView surface;
 	private SurfaceHolder surfaceHolder;
@@ -127,7 +128,8 @@ public class QueueDisplayActivity extends Activity{
 		readQueueData();
 		
 		surfaceHolder = surface.getHolder();
-		new MyMediaPlayer(QueueDisplayActivity.this, surfaceHolder, queueData.getVideoPath());
+		myMediaPlayer = 
+				new MyMediaPlayer(QueueDisplayActivity.this, surfaceHolder, queueData.getVideoPath());
 		
 		// update queue
 		if(queueData.isEnableQueue()){
@@ -494,20 +496,21 @@ public class QueueDisplayActivity extends Activity{
 							"mm:ss");
 					Date dNow = new Date();
 					Date dStart = new Date();
-//					try {
-//						dStart = dateFormat.parse(takeAwayData
-//								.getSzStartDateTime());
-//					} catch (ParseException e) {
-//						dateFormat.applyLocalizedPattern("dd/MM/yy HH:mm");
-//						try {
-//							dStart = dateFormat.parse(takeAwayData
-//									.getSzStartDateTime());
-//						} catch (ParseException e1) {
-//							// TODO Auto-generated catch block
-//							e1.printStackTrace();
-//						}
-//						e.printStackTrace();
-//					}
+					
+					try {
+						dStart = dateFormat.parse(takeAwayData
+								.getSzStartDateTime());
+					} catch (ParseException e) {
+						dateFormat.applyLocalizedPattern("dd/MM/yy HH:mm");
+						try {
+							dStart = dateFormat.parse(takeAwayData
+									.getSzStartDateTime());
+						} catch (ParseException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						e.printStackTrace();
+					}
 
 					long currTime = dNow.getTime();
 					long sTime = dStart.getTime();
