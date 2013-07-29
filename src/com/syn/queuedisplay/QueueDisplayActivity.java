@@ -1,5 +1,9 @@
 package com.syn.queuedisplay;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import syn.pos.data.model.QueueDisplayInfo;
@@ -484,11 +488,26 @@ public class QueueDisplayActivity extends Activity{
 					TextView tvStatus = (TextView) v.findViewById(R.id.textViewTakeStatus);
 					TextView tvNo = (TextView) v.findViewById(R.id.textViewTakeNo);
 					
+					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+					Date dNow = new Date();
+					Date dStart = new Date();
+					try {
+						dStart = timeFormat.parse(takeAwayData.getSzStartDateTime());
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					long currTime = dNow.getTime();
+					long sTime = dStart.getTime();
+					long waitTime = currTime - sTime;
+					Date dWait = new Date(waitTime);
+					
 					tvNo.setText(takeAwayData.getSzQueueName());
 					tvNo.setSelected(true);
 					tvName.setText(takeAwayData.getSzTransName());
 					tvName.setSelected(true);
-					tvTimeIn.setText(takeAwayData.getSzStartDateTime());
+					tvTimeIn.setText(timeFormat.format(dWait));
 					tvTimeIn.setSelected(true);
 					tvStatus.setText(takeAwayData.getSzKdsStatusName());
 					tvStatus.setSelected(true);
