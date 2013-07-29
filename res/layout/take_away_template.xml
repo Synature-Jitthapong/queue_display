@@ -7,10 +7,9 @@
 
     <TextView
         android:id="@+id/textViewTakeNo"
-        android:layout_width="150dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_marginRight="1dp"
-        android:layout_weight="0.25"
         android:background="@color/list_background_dark"
         android:ellipsize="marquee"
         android:fadingEdge="horizontal"
@@ -27,7 +26,7 @@
 
     <TextView
         android:id="@+id/textViewTakeName"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="1dp"
         android:layout_marginRight="1dp"
@@ -48,7 +47,7 @@
 
     <TextView
         android:id="@+id/textViewTakeTimeIn"
-        android:layout_width="180dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="1dp"
         android:layout_marginRight="1dp"
@@ -68,7 +67,7 @@
 
     <TextView
         android:id="@+id/textViewTakeStatus"
-        android:layout_width="180dp"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:background="@color/list_background_dark"
         android:ellipsize="marquee"

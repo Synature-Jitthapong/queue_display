@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import syn.pos.data.model.QueueDisplayInfo;
 
@@ -480,40 +481,42 @@ public class QueueDisplayActivity extends Activity{
 				
 				LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
 				
-				int i = 0;
-				for(TakeAwayData takeAwayData : takeAwayLst){
+				for(final TakeAwayData takeAwayData : takeAwayLst){
 					View v = inflater.inflate(R.layout.take_away_template, null);
 					TextView tvName = (TextView) v.findViewById(R.id.textViewTakeName);
-					TextView tvTimeIn = (TextView) v.findViewById(R.id.textViewTakeTimeIn);
+					final TextView tvTimeIn = (TextView) v.findViewById(R.id.textViewTakeTimeIn);
 					TextView tvStatus = (TextView) v.findViewById(R.id.textViewTakeStatus);
 					TextView tvNo = (TextView) v.findViewById(R.id.textViewTakeNo);
-					
-					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+
+					SimpleDateFormat dateFormat = new SimpleDateFormat(
+							"dd/MM/yy HH:mm");
+					SimpleDateFormat timeFormat = new SimpleDateFormat(
+							"mm:ss");
 					Date dNow = new Date();
 					Date dStart = new Date();
 					try {
-						dStart = timeFormat.parse(takeAwayData.getSzStartDateTime());
+						dStart = dateFormat.parse(takeAwayData
+								.getSzStartDateTime());
 					} catch (ParseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
+
 					long currTime = dNow.getTime();
 					long sTime = dStart.getTime();
 					long waitTime = currTime - sTime;
 					Date dWait = new Date(waitTime);
+					tvTimeIn.setText(timeFormat.format(dWait));
+					tvTimeIn.setSelected(true);
 					
 					tvNo.setText(takeAwayData.getSzQueueName());
 					tvNo.setSelected(true);
 					tvName.setText(takeAwayData.getSzTransName());
 					tvName.setSelected(true);
-					tvTimeIn.setText(timeFormat.format(dWait));
-					tvTimeIn.setSelected(true);
 					tvStatus.setText(takeAwayData.getSzKdsStatusName());
 					tvStatus.setSelected(true);
-
+					
 					takeAwayLayout.addView(v);
-					i++;
 				}
 			}
 			
