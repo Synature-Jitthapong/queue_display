@@ -89,7 +89,9 @@
                             android:layout_weight="1"
                             android:text="Pickup Queue"
                             android:textAppearance="?android:attr/textAppearanceLarge"
+                            android:textColor="@android:color/holo_blue_bright"
                             android:textStyle="bold" />
+
                     </LinearLayout>
 
                     <LinearLayout
@@ -174,6 +176,7 @@
                         android:padding="4dp"
                         android:text="Table Queue"
                         android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@android:color/holo_blue_bright"
                         android:textStyle="bold" />
 
                     <LinearLayout
