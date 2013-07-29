@@ -486,43 +486,16 @@ public class QueueDisplayActivity extends Activity{
 				for(final TakeAwayData takeAwayData : takeAwayLst){
 					View v = inflater.inflate(R.layout.take_away_template, null);
 					TextView tvName = (TextView) v.findViewById(R.id.textViewTakeName);
-					final TextView tvTimeIn = (TextView) v.findViewById(R.id.textViewTakeTimeIn);
+					TextView tvTimeIn = (TextView) v.findViewById(R.id.textViewTakeTimeIn);
 					TextView tvStatus = (TextView) v.findViewById(R.id.textViewTakeStatus);
 					TextView tvNo = (TextView) v.findViewById(R.id.textViewTakeNo);
-
-					SimpleDateFormat dateFormat = new SimpleDateFormat(
-							"dd/MM/yy HH:mm:ss");
-					SimpleDateFormat timeFormat = new SimpleDateFormat(
-							"mm:ss");
-					Date dNow = new Date();
-					Date dStart = new Date();
-					
-					try {
-						dStart = dateFormat.parse(takeAwayData
-								.getSzStartDateTime());
-					} catch (ParseException e) {
-						dateFormat.applyLocalizedPattern("dd/MM/yy HH:mm");
-						try {
-							dStart = dateFormat.parse(takeAwayData
-									.getSzStartDateTime());
-						} catch (ParseException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						e.printStackTrace();
-					}
-
-					long currTime = dNow.getTime();
-					long sTime = dStart.getTime();
-					long waitTime = currTime - sTime;
-					Date dWait = new Date(waitTime);
-					tvTimeIn.setText(timeFormat.format(dWait));
-					tvTimeIn.setSelected(true);
 					
 					tvNo.setText(takeAwayData.getSzQueueName());
 					tvNo.setSelected(true);
 					tvName.setText(takeAwayData.getSzTransName());
 					tvName.setSelected(true);
+					tvTimeIn.setText(takeAwayData.getSzStartDateTime());
+					tvTimeIn.setSelected(true);
 					tvStatus.setText(takeAwayData.getSzKdsStatusName());
 					tvStatus.setSelected(true);
 					
