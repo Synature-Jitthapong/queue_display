@@ -494,20 +494,20 @@ public class QueueDisplayActivity extends Activity{
 							"mm:ss");
 					Date dNow = new Date();
 					Date dStart = new Date();
-					try {
-						dStart = dateFormat.parse(takeAwayData
-								.getSzStartDateTime());
-					} catch (ParseException e) {
-						dateFormat.applyLocalizedPattern("dd/MM/yy HH:mm");
-						try {
-							dStart = dateFormat.parse(takeAwayData
-									.getSzStartDateTime());
-						} catch (ParseException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						e.printStackTrace();
-					}
+//					try {
+//						dStart = dateFormat.parse(takeAwayData
+//								.getSzStartDateTime());
+//					} catch (ParseException e) {
+//						dateFormat.applyLocalizedPattern("dd/MM/yy HH:mm");
+//						try {
+//							dStart = dateFormat.parse(takeAwayData
+//									.getSzStartDateTime());
+//						} catch (ParseException e1) {
+//							// TODO Auto-generated catch block
+//							e1.printStackTrace();
+//						}
+//						e.printStackTrace();
+//					}
 
 					long currTime = dNow.getTime();
 					long sTime = dStart.getTime();
