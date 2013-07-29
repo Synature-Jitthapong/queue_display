@@ -171,7 +171,7 @@
                         android:layout_marginBottom="1dp"
                         android:background="@color/sub_head_dark"
                         android:padding="4dp"
-                        android:text="Queue"
+                        android:text="Calling Queue"
                         android:textAppearance="?android:attr/textAppearanceLarge"
                         android:textStyle="bold" />
 
