@@ -98,6 +98,7 @@ public class QueueDisplayActivity extends Activity{
 	private TextView tvSumQA;
 	private TextView tvSumQB;
 	private TextView tvSumQC;
+	private TextView tvPlaying;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +120,7 @@ public class QueueDisplayActivity extends Activity{
 		tvSumQB = (TextView) findViewById(R.id.textViewSumQB);
 		tvSumQA = (TextView) findViewById(R.id.textViewSumQA);
 		tvSumQC = (TextView) findViewById(R.id.textViewSumQC);
+		tvPlaying = (TextView) findViewById(R.id.textViewPlaying);
 		
 		tvMarquee.setSelected(true);
 		
@@ -133,14 +135,12 @@ public class QueueDisplayActivity extends Activity{
 
 							@Override
 							public void onError(Exception e) {
-								tvMarquee.setText(e.getMessage());
-								tvMarquee.setBackgroundColor(Color.RED);
+								
 							}
 
 							@Override
 							public void onPlayedFileName(String fileName) {
-								//tvMarquee.setText(fileName);
-								
+								tvPlaying.setText(fileName);
 							}
 					
 				});
