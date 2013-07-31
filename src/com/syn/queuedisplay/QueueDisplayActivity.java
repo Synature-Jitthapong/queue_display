@@ -31,6 +31,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -293,6 +294,8 @@ public class QueueDisplayActivity extends Activity{
 		final Dialog d = new Dialog(QueueDisplayActivity.this);
 		d.setContentView(v);
 		d.setTitle("Setting");
+		d.getWindow().setSoftInputMode(
+				WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		d.show();
 		
 		btnCancel.setOnClickListener(new OnClickListener(){
