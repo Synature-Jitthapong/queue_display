@@ -531,10 +531,12 @@ public class QueueDisplayActivity extends Activity{
 		
 	}
 	
+	
+
 	@Override
-	protected void onStop() {
+	protected void onDestroy() {
 		myMediaPlayer.releaseMediaPlayer();
-		super.onStop();
+		super.onDestroy();
 	}
 
 	private void popup(String title, String msg){
