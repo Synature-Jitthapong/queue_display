@@ -18,6 +18,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -81,7 +82,6 @@ public class QueueDisplayActivity extends Activity{
 	
 	private QueueData queueData;
 	private SurfaceView surface;
-	private SurfaceHolder surfaceHolder;
 	private TextView tvMarquee;
 	
 
@@ -126,10 +126,24 @@ public class QueueDisplayActivity extends Activity{
 				Secure.ANDROID_ID);
 		
 		readQueueData();
-		
-		surfaceHolder = surface.getHolder();
+
 		myMediaPlayer = 
-				new MyMediaPlayer(QueueDisplayActivity.this, surfaceHolder, queueData.getVideoPath());
+				new MyMediaPlayer(QueueDisplayActivity.this, surface, 
+						queueData.getVideoPath(), new MyMediaPlayer.MediaPlayerStateListener(){
+
+							@Override
+							public void onError(Exception e) {
+								tvMarquee.setText(e.getMessage());
+								tvMarquee.setBackgroundColor(Color.RED);
+							}
+
+							@Override
+							public void onPlayedFileName(String fileName) {
+								//tvMarquee.setText(fileName);
+								
+							}
+					
+				});
 		
 		// update queue
 		if(queueData.isEnableQueue()){
@@ -517,6 +531,12 @@ public class QueueDisplayActivity extends Activity{
 		
 	}
 	
+	@Override
+	protected void onStop() {
+		myMediaPlayer.releaseMediaPlayer();
+		super.onStop();
+	}
+
 	private void popup(String title, String msg){
 		new AlertDialog.Builder(QueueDisplayActivity.this)
 		.setTitle(title)
