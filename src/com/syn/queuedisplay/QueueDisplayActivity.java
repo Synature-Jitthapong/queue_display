@@ -120,9 +120,7 @@ public class QueueDisplayActivity extends Activity{
 		tvSumQB = (TextView) findViewById(R.id.textViewSumQB);
 		tvSumQA = (TextView) findViewById(R.id.textViewSumQA);
 		tvSumQC = (TextView) findViewById(R.id.textViewSumQC);
-		tvPlaying = (TextView) findViewById(R.id.textViewPlaying);
-		
-		tvMarquee.setSelected(true);
+		tvPlaying = (TextView) findViewById(R.id.textViewPlaying);	
 		
 		deviceCode = Secure.getString(this.getContentResolver(),
 				Secure.ANDROID_ID);
@@ -332,9 +330,6 @@ public class QueueDisplayActivity extends Activity{
 					
 					d.dismiss();
 					
-					isTakeRun = false;
-					isQueueRun = false;
-					
 					QueueDisplayActivity.this.finish();
 					Intent intent = 
 							new Intent(QueueDisplayActivity.this, QueueDisplayActivity.class);
@@ -479,8 +474,7 @@ public class QueueDisplayActivity extends Activity{
 			
 			@Override
 			public void onError(String msg) {
-//				isRun = false;
-//				popup("Error", msg);
+
 			}
 		}).execute(serviceUrl);
 	}
@@ -524,25 +518,17 @@ public class QueueDisplayActivity extends Activity{
 			
 			@Override
 			public void onError(String msg) {
-//				isRun = false;
-//				popup("Error", msg);
+
 			}
 		}).execute(serviceUrl);
 		
 	}
-	
-	
 
 	@Override
 	protected void onDestroy() {
+		isTakeRun = false;
+		isQueueRun = false;
 		myMediaPlayer.releaseMediaPlayer();
 		super.onDestroy();
-	}
-
-	private void popup(String title, String msg){
-		new AlertDialog.Builder(QueueDisplayActivity.this)
-		.setTitle(title)
-		.setMessage(msg)
-		.show();
 	}
 }
