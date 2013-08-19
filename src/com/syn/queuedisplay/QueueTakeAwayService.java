@@ -8,7 +8,7 @@ import syn.pos.data.model.QueueDisplayInfo;
 import syn.pos.data.model.WebServiceResult;
 
 import com.google.gson.reflect.TypeToken;
-import com.j1tth4.mobile.core.util.JSONUtil;
+import com.j1tth4.mobile.util.JSONUtil;
 
 import android.content.Context;
 

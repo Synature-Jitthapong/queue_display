@@ -9,7 +9,7 @@ import java.util.Locale;
 
 import syn.pos.data.model.QueueDisplayInfo;
 
-import com.j1tth4.mobile.core.util.MyMediaPlayer;
+import com.j1tth4.mobile.util.MyMediaPlayer;
 import com.syn.queuedisplay.util.SystemUiHider;
 
 import android.annotation.TargetApi;

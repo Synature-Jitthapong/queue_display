@@ -6,7 +6,7 @@ import syn.pos.data.model.QueueDisplayInfo;
 
 import android.content.Context;
 
-import com.j1tth4.mobile.core.util.DotNetWebServiceTask;
+import com.j1tth4.mobile.util.DotNetWebServiceTask;
 
 public class QueueDisplayMainService extends DotNetWebServiceTask {
 	public QueueDisplayMainService(Context c, int shopId, String deviceCode, String method) {
