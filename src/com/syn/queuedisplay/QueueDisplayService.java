@@ -1,6 +1,11 @@
 package com.syn.queuedisplay;
 
-import syn.pos.data.json.GsonDeserialze;
+import java.lang.reflect.Type;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.j1tth4.mobile.util.JSONUtil;
+
 import syn.pos.data.model.QueueDisplayInfo;
 
 import android.content.Context;
@@ -15,11 +20,13 @@ public class QueueDisplayService extends QueueDisplayMainService {
 
 	@Override
 	protected void onPostExecute(String result) {
-		GsonDeserialze gdz = new GsonDeserialze();
+		JSONUtil jsonUtil = new JSONUtil();
+		Type type = new TypeToken<QueueDisplayInfo>() {}.getType();
+		
 		
 		try {
-			QueueDisplayInfo queueDisplayInfo = gdz
-					.deserializeQueueDisplayInfoJSON(result);
+			QueueDisplayInfo queueDisplayInfo = 
+					(QueueDisplayInfo) jsonUtil.toObject(type, result);
 			
 			callback.onSuccess(queueDisplayInfo);
 		} catch (Exception e) {

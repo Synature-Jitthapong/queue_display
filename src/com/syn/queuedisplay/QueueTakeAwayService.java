@@ -2,9 +2,6 @@ package com.syn.queuedisplay;
 
 import java.lang.reflect.Type;
 import java.util.List;
-
-import syn.pos.data.json.GsonDeserialze;
-import syn.pos.data.model.QueueDisplayInfo;
 import syn.pos.data.model.WebServiceResult;
 
 import com.google.gson.reflect.TypeToken;
@@ -23,14 +20,15 @@ public class QueueTakeAwayService extends QueueDisplayMainService {
 
 	@Override
 	protected void onPostExecute(String result) {
-		GsonDeserialze gdz = new GsonDeserialze();
+		JSONUtil jsonUtil = new JSONUtil();
+		Type type = new TypeToken<WebServiceResult>() {}.getType();
 		try {
-			WebServiceResult wsResult = gdz.deserializeWsResultJSON(result);
+			WebServiceResult wsResult = (WebServiceResult) jsonUtil.toObject(type, result);
 			
 			if(wsResult.getiResultID() == 0){
 				try {
-					JSONUtil jsonUtil = new JSONUtil();
-					Type type = new TypeToken<List<TakeAwayData>>() {}.getType();
+					jsonUtil = new JSONUtil();
+					type = new TypeToken<List<TakeAwayData>>() {}.getType();
 					List<TakeAwayData> takeAwayLst = 
 							(List<TakeAwayData>) jsonUtil.toObject(type, wsResult.getSzResultData());
 					
