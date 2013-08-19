@@ -9,6 +9,9 @@ import java.util.Locale;
 
 import syn.pos.data.model.QueueDisplayInfo;
 
+import com.google.gson.Gson;
+import com.j1tth4.mobile.connection.socket.ClientSocket;
+import com.j1tth4.mobile.connection.socket.ISocketConnection;
 import com.j1tth4.mobile.util.MyMediaPlayer;
 import com.syn.queuedisplay.util.SystemUiHider;
 
@@ -45,7 +48,7 @@ import android.widget.TextView;
  * 
  * @see SystemUiHider
  */
-public class QueueDisplayActivity extends Activity{
+public class QueueDisplayActivity extends Activity implements Runnable{
 	/**
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -81,6 +84,7 @@ public class QueueDisplayActivity extends Activity{
 	private Handler handlerTake;
 	private MyMediaPlayer myMediaPlayer;
 	
+	private ISocketConnection socketConn;
 	private QueueData queueData;
 	private SurfaceView surface;
 	private TextView tvMarquee;
@@ -143,6 +147,8 @@ public class QueueDisplayActivity extends Activity{
 							}
 					
 				});
+		
+		//new Thread(this).start();
 		
 		// update queue
 		if(queueData.isEnableQueue()){
@@ -533,5 +539,20 @@ public class QueueDisplayActivity extends Activity{
 		isQueueRun = false;
 		myMediaPlayer.releaseMediaPlayer();
 		super.onDestroy();
+	}
+
+	@Override
+	public void run() {
+		try {
+			socketConn = new ClientSocket(queueData.getServerIp(), 5555);
+			String msg;
+			while ((msg = socketConn.receive()) != null) {
+				Log.d("msg", msg);
+				
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
