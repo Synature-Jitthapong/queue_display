@@ -1,7 +1,7 @@
 <resources>
 
     <color name="black_overlay">#66000000</color>
-    <color name="head">#FF7D0006</color>
+    <color name="head">#FF2A0002</color>
     <color name="sub_head">#FF9AA626</color>
     <color name="background">#FFF0F0F0</color>
     <color name="sub_bacground">#FFEAD2B5</color>

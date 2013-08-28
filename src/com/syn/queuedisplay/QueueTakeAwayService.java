@@ -2,10 +2,10 @@ package com.syn.queuedisplay;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import syn.pos.data.model.WebServiceResult;
 
 import com.google.gson.reflect.TypeToken;
 import com.j1tth4.mobile.util.JSONUtil;
+import com.syn.mpos.model.WebServiceResult;
 
 import android.content.Context;
 

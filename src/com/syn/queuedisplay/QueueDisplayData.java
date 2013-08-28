@@ -1,5 +1,9 @@
 package com.syn.queuedisplay;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -20,6 +24,61 @@ public class QueueDisplayData {
 	
 	private void close() throws SQLException{
 		db.close();
+	}
+	
+	public QueueData.MarqueeText getLastMarquee(){
+		QueueData.MarqueeText marquee = 
+				new QueueData.MarqueeText();
+		
+		String strSql = "SELECT * FROM marquee ORDER BY text_id DESC LIMIT 1";
+		open();
+		Cursor cursor = db.rawQuery(strSql, null);
+		if(cursor.moveToFirst()){
+			do{
+				marquee.setTextId(cursor.getInt(cursor.getColumnIndex("text_id")));
+				marquee.setTextVal(cursor.getString(cursor.getColumnIndex("text")));
+			}while(cursor.moveToNext());
+		}
+		cursor.close();
+		close();
+		return marquee;
+	}
+	
+	public List<QueueData.MarqueeText> readMarquee(){
+		List<QueueData.MarqueeText> marqueeLst = 
+				new ArrayList<QueueData.MarqueeText>();
+		
+		String strSql = "SELECT * FROM marquee ORDER BY ordering";
+		open();
+		Cursor cursor = db.rawQuery(strSql, null);
+		if(cursor.moveToFirst()){
+			do{
+				QueueData.MarqueeText marquee = 
+						new QueueData.MarqueeText();
+				marquee.setTextId(cursor.getInt(cursor.getColumnIndex("text_id")));
+				marquee.setTextVal(cursor.getString(cursor.getColumnIndex("text")));
+				marqueeLst.add(marquee);
+			}while(cursor.moveToNext());
+		}
+		cursor.close();
+		close();
+		return marqueeLst;
+	}
+	
+	public void removeMarquee(int id){
+		String strSql = "DELETE FROM marquee " +
+				" WHERE text_id=" + id;
+		open();
+		db.execSQL(strSql);
+		close();
+	}
+	
+	public void addMarquee(String marquee){
+		open();
+		ContentValues cv = new ContentValues();
+		cv.put("text", marquee);
+		db.insert("marquee", null, cv);
+		close();
 	}
 	
 	public QueueData readConfig(){

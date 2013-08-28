@@ -58,4 +58,35 @@ public class QueueData {
 	public void setLogoPath(String logoPath) {
 		this.logoPath = logoPath;
 	}
+	
+	public static class MarqueeText{
+		private int textId;
+		private String textVal;
+		private float duration;
+		private int ordering;
+		public int getTextId() {
+			return textId;
+		}
+		public void setTextId(int textId) {
+			this.textId = textId;
+		}
+		public String getTextVal() {
+			return textVal;
+		}
+		public void setTextVal(String textVal) {
+			this.textVal = textVal;
+		}
+		public float getDuration() {
+			return duration;
+		}
+		public void setDuration(float duration) {
+			this.duration = duration;
+		}
+		public int getOrdering() {
+			return ordering;
+		}
+		public void setOrdering(int ordering) {
+			this.ordering = ordering;
+		}
+	}
 }

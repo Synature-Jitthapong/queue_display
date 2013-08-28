@@ -2,11 +2,9 @@ package com.syn.queuedisplay;
 
 import java.lang.reflect.Type;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.j1tth4.mobile.util.JSONUtil;
-
-import syn.pos.data.model.QueueDisplayInfo;
+import com.syn.mpos.model.QueueDisplayInfo;
 
 import android.content.Context;
 

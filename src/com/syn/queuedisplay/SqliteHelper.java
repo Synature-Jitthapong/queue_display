@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class SqliteHelper extends SQLiteOpenHelper {
 	private static String dbName = "queue";
 
-	private static final String createTbConfig = "CREATE TABLE config (" +
+	private static final String TB_CONFIG = "CREATE TABLE config (" +
 			" shop_id INTEGER DEFAULT 0, " +
 			" server_ip TEXT, " + 
 			" service_name TEXT, " +
@@ -16,6 +16,12 @@ public class SqliteHelper extends SQLiteOpenHelper {
 			" logo_path TEXT, " +
 			" is_enable_queue INTEGER DEFAULT 0, " +
 			" is_enable_take INTEGER DEFAULT 1 );";
+	
+	private static final String TB_MARQUEE = "CREATE TABLE marquee (" +
+			" text_id INTEGER PRIMARY KEY AUTOINCREMENT DEFAULT 0, " +
+			" text TEXT, " +
+			" duration REAL DEFAULT 1000, " +
+			" ordering INTEGER DEFAULT 0); ";
 
 	public SqliteHelper(Context context) {
 		super(context, dbName, null, 1);
@@ -23,7 +29,8 @@ public class SqliteHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL(createTbConfig);
+		db.execSQL(TB_CONFIG);
+		db.execSQL(TB_MARQUEE);
 	}
 
 	@Override

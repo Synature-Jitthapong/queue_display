@@ -1,11 +1,7 @@
 package com.syn.queuedisplay;
 
 import org.ksoap2.serialization.PropertyInfo;
-
-import syn.pos.data.model.QueueDisplayInfo;
-
 import android.content.Context;
-
 import com.j1tth4.mobile.util.DotNetWebServiceTask;
 
 public class QueueDisplayMainService extends DotNetWebServiceTask {

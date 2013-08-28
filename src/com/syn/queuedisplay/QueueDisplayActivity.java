@@ -1,18 +1,10 @@
 package com.syn.queuedisplay;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-
-import syn.pos.data.model.QueueDisplayInfo;
-
-import com.google.gson.Gson;
 import com.j1tth4.mobile.connection.socket.ClientSocket;
 import com.j1tth4.mobile.connection.socket.ISocketConnection;
 import com.j1tth4.mobile.util.MyMediaPlayer;
+import com.syn.mpos.model.QueueDisplayInfo;
 import com.syn.queuedisplay.util.SystemUiHider;
 
 import android.annotation.TargetApi;
@@ -21,7 +13,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,15 +22,18 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 /**
@@ -83,13 +77,17 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 	private Handler handlerQueue;
 	private Handler handlerTake;
 	private MyMediaPlayer myMediaPlayer;
+	private boolean isPause = false;
 	
+	private QueueDisplayData config;
 	private ISocketConnection socketConn;
 	private QueueData queueData;
+	private List<QueueData.MarqueeText> marqueeLst;
+	private MarqueeAdapter marqueeAdapter;
 	private SurfaceView surface;
-	private TextView tvMarquee;
+	private ScrollTextView tvMarquee;
 	
-
+	private LinearLayout marqueeContent;
 	private LinearLayout queueTakeLayout;
 	private LinearLayout takeAwayLayout;
 	private LinearLayout queueLayout;
@@ -112,7 +110,7 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		setContentView(R.layout.activity_queue_display);
 		final View contentView = findViewById(R.id.queue_layout);
 		surface = (SurfaceView) findViewById(R.id.surfaceView1);
-		tvMarquee = (TextView) findViewById(R.id.textViewMarquee);
+		marqueeContent = (LinearLayout) findViewById(R.id.marqueeContent);
 		takeAwayLayout = (LinearLayout) findViewById(R.id.takeAwayLayout);
 		queueTakeLayout = (LinearLayout) findViewById(R.id.layoutQueueTake);
 		queueLayout = (LinearLayout) findViewById(R.id.layoutQueue);
@@ -131,6 +129,7 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 				Secure.ANDROID_ID);
 		
 		readQueueData();
+		readMarquee();
 
 		myMediaPlayer = 
 				new MyMediaPlayer(QueueDisplayActivity.this, surface, 
@@ -245,11 +244,30 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 	};
 	
 	private void readQueueData(){
-		QueueDisplayData config = 
-				new QueueDisplayData(QueueDisplayActivity.this);
+		config = new QueueDisplayData(QueueDisplayActivity.this);
 		queueData = config.readConfig();
 		
 		serviceUrl = "http://" + queueData.getServerIp() + "/" + queueData.getServiceName() + "/ws_mpos.asmx";
+	}
+	
+	private void readMarquee(){
+		marqueeLst = config.readMarquee();
+		
+		createMarqueeText();
+	}
+	
+	private void createMarqueeText(){
+		ScrollTextView tvMarquee = new ScrollTextView(QueueDisplayActivity.this);
+		tvMarquee.setTextAppearance(QueueDisplayActivity.this, android.R.style.TextAppearance_DeviceDefault_Medium);
+		for(QueueData.MarqueeText marquee : marqueeLst){
+			tvMarquee.append(marquee.getTextVal());
+			for(int i = 0; i< 10; i ++){
+				tvMarquee.append("\t");
+			}
+		}
+		tvMarquee.setmRndDuration(35000);
+		tvMarquee.startScroll();
+		marqueeContent.addView(tvMarquee);
 	}
 	
 	private void popupSetting(){
@@ -259,13 +277,16 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		final EditText txtIp = (EditText) v.findViewById(R.id.editTextIp);
 		final EditText txtService = (EditText) v.findViewById(R.id.editTextService);
 		final EditText txtVideoDir = (EditText) v.findViewById(R.id.editTextVideoDir);
+		final EditText txtMarquee = (EditText) v.findViewById(R.id.editTextMarquee);
 		final CheckBox chkEnableQueue = (CheckBox) v.findViewById(R.id.checkBoxQueue);
 		final CheckBox chkEnableTake = (CheckBox) v.findViewById(R.id.checkBoxTake);
 		final EditText txtInterval = (EditText) v.findViewById(R.id.editTextInterval);
+		final ListView lvMarquee = (ListView) v.findViewById(R.id.listViewMarquee);
 		final Button btnIntervalMinus = (Button) v.findViewById(R.id.buttonIntervalMinus);
 		final Button btnIntervalPlus = (Button) v.findViewById(R.id.buttonIntervalPlus);
 		final Button btnCancel = (Button) v.findViewById(R.id.buttonCancel);
 		final Button btnOk = (Button) v.findViewById(R.id.buttonOk);
+		final Button btnAddMarquee = (Button) v.findViewById(R.id.btnAddMarquee);
 		
 		int shopId = queueData.getShopId();
 		String strShopId = shopId != 0 ? Integer.toString(shopId) : "";
@@ -278,6 +299,9 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		chkEnableTake.setChecked(queueData.isEnableTake());
 		txtInterval.setText(Integer.toString((queueData.getUpdateInterval() == 0 ? 30000 : queueData.getUpdateInterval()) / 1000));
 		
+		marqueeAdapter = new MarqueeAdapter();
+		lvMarquee.setAdapter(marqueeAdapter);
+		
 		btnIntervalMinus.setOnClickListener(new OnClickListener(){
 
 			@Override
@@ -287,6 +311,7 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 			}
 			
 		});
+		
 		btnIntervalPlus.setOnClickListener(new OnClickListener(){
 
 			@Override
@@ -297,11 +322,25 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 			
 		});
 		
+		btnAddMarquee.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View view) {
+				String marquee = txtMarquee.getText().toString();
+				config.addMarquee(marquee);
+				txtMarquee.setText("");
+				
+				marqueeLst.add(config.getLastMarquee());
+				marqueeAdapter.notifyDataSetChanged();
+			}
+			
+		});
+		
 		final Dialog d = new Dialog(QueueDisplayActivity.this);
 		d.setContentView(v);
-		d.setTitle("Setting");
+		d.setTitle(R.string.title_activity_setting);
 		d.getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 		d.show();
 		
 		btnCancel.setOnClickListener(new OnClickListener(){
@@ -331,9 +370,6 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 				}
 				
 				if(!shopId.equals("") && !ip.equals("") && !service.equals("")){
-					QueueDisplayData config = 
-							new QueueDisplayData(QueueDisplayActivity.this);
-					
 					config.addConfig(Integer.parseInt(shopId), ip, service, interval, videoDir, "", 
 							chkEnableQueue.isChecked(), chkEnableTake.isChecked());
 					
@@ -534,6 +570,14 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 	}
 
 	@Override
+	protected void onPause() {
+		isTakeRun = false;
+		isQueueRun = false;
+		myMediaPlayer.releaseMediaPlayer();
+		super.onPause();
+	}
+
+	@Override
 	protected void onDestroy() {
 		isTakeRun = false;
 		isQueueRun = false;
@@ -541,6 +585,27 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		super.onDestroy();
 	}
 
+	public void videoBackClicked(final View v){
+		myMediaPlayer.back();
+	}
+	
+	public void videoPauseClicked(final View v){
+		if(!isPause){
+			myMediaPlayer.pause();
+			((ImageButton)v).setImageResource(android.R.drawable.ic_media_play);
+			isPause = true;
+		}
+		else{
+			myMediaPlayer.resume();
+			((ImageButton)v).setImageResource(android.R.drawable.ic_media_pause);
+			isPause = false;
+		}
+	}
+	
+	public void videoNextClicked(final View v){
+		myMediaPlayer.next();
+	}
+	
 	@Override
 	public void run() {
 		try {
@@ -553,6 +618,62 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	private class MarqueeAdapter extends BaseAdapter{
+		private LayoutInflater inflater;
+		
+		public MarqueeAdapter(){
+			inflater = LayoutInflater.from(QueueDisplayActivity.this);
+		}
+		
+		@Override
+		public int getCount() {
+			return marqueeLst != null ? marqueeLst.size() : 0;
+		}
+
+		@Override
+		public QueueData.MarqueeText getItem(int position) {
+			return marqueeLst.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return position;
+		}
+
+		@Override
+		public View getView(final int position, View convertView, ViewGroup parent) {
+			ViewHolder holder;
+			final QueueData.MarqueeText marquee = marqueeLst.get(position);
+			if(convertView == null){
+				convertView = inflater.inflate(R.layout.marquee_template, null);
+				holder = new ViewHolder();
+				holder.tvText = (TextView) convertView.findViewById(R.id.textView1);
+				holder.btnDel = (ImageButton) convertView.findViewById(R.id.imageButton1);
+				convertView.setTag(holder);
+			}else{
+				holder = (ViewHolder) convertView.getTag();
+			}
+			
+			holder.tvText.setText(marquee.getTextVal());
+			holder.btnDel.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View v) {
+					config.removeMarquee(marquee.getTextId());
+					marqueeLst.remove(position);
+					notifyDataSetChanged();
+				}
+				
+			});
+			return convertView;
+		}
+		
+		private class ViewHolder{
+			TextView tvText;
+			ImageButton btnDel;
 		}
 	}
 }
