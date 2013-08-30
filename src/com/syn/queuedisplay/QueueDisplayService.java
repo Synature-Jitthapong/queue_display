@@ -21,7 +21,6 @@ public class QueueDisplayService extends QueueDisplayMainService {
 		JSONUtil jsonUtil = new JSONUtil();
 		Type type = new TypeToken<QueueDisplayInfo>() {}.getType();
 		
-		
 		try {
 			QueueDisplayInfo queueDisplayInfo = 
 					(QueueDisplayInfo) jsonUtil.toObject(type, result);

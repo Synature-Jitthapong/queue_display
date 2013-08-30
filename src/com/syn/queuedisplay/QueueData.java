@@ -6,10 +6,17 @@ public class QueueData {
 	private String serviceName;
 	private String videoPath;
 	private String logoPath;
+	private int port;
 	private boolean isEnableQueue;
 	private boolean isEnableTake;
 	private int updateInterval;
 	
+	public int getPort() {
+		return port;
+	}
+	public void setPort(int port) {
+		this.port = port;
+	}
 	public boolean isEnableTake() {
 		return isEnableTake;
 	}

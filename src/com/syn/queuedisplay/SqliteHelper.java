@@ -14,6 +14,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
 			" update_interval INTEGER DEFAULT 0, " +
 			" video_path TEXT, " +
 			" logo_path TEXT, " +
+			" port INTEGER DEFAULT 5050, " + 
 			" is_enable_queue INTEGER DEFAULT 0, " +
 			" is_enable_take INTEGER DEFAULT 1 );";
 	

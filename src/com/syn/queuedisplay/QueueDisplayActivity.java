@@ -25,6 +25,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
@@ -85,7 +86,6 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 	private List<QueueData.MarqueeText> marqueeLst;
 	private MarqueeAdapter marqueeAdapter;
 	private SurfaceView surface;
-	private ScrollTextView tvMarquee;
 	
 	private LinearLayout marqueeContent;
 	private LinearLayout queueTakeLayout;
@@ -214,7 +214,7 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		public void run() {
 			if (isQueueRun) {
 				try {
-					createQueue();
+					createQueueFromService();
 					handlerQueue.postDelayed(this, queueData.getUpdateInterval());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -232,7 +232,7 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		public void run() {
 			if (isTakeRun) {
 				try {
-					createTakeAway();
+					createTakeAwayFromService();
 					handlerTake.postDelayed(this,  queueData.getUpdateInterval());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -258,7 +258,9 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 	
 	private void createMarqueeText(){
 		ScrollTextView tvMarquee = new ScrollTextView(QueueDisplayActivity.this);
-		tvMarquee.setTextAppearance(QueueDisplayActivity.this, android.R.style.TextAppearance_DeviceDefault_Medium);
+		LayoutParams param = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		tvMarquee.setLayoutParams(param);
+		tvMarquee.setTextAppearance(QueueDisplayActivity.this, android.R.style.TextAppearance_DeviceDefault_Large);
 		for(QueueData.MarqueeText marquee : marqueeLst){
 			tvMarquee.append(marquee.getTextVal());
 			for(int i = 0; i< 10; i ++){
@@ -267,6 +269,7 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		}
 		tvMarquee.setmRndDuration(35000);
 		tvMarquee.startScroll();
+		marqueeContent.removeAllViews();
 		marqueeContent.addView(tvMarquee);
 	}
 	
@@ -275,6 +278,7 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		final View v = inflater.inflate(R.layout.activity_setting, null);
 		final EditText txtShopId = (EditText) v.findViewById(R.id.editTextShopId);
 		final EditText txtIp = (EditText) v.findViewById(R.id.editTextIp);
+		final EditText txtPort = (EditText) v.findViewById(R.id.txtPort);
 		final EditText txtService = (EditText) v.findViewById(R.id.editTextService);
 		final EditText txtVideoDir = (EditText) v.findViewById(R.id.editTextVideoDir);
 		final EditText txtMarquee = (EditText) v.findViewById(R.id.editTextMarquee);
@@ -293,6 +297,7 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		
 		txtShopId.setText(strShopId);
 		txtIp.setText(queueData.getServerIp());
+		txtPort.setText(Integer.toString(queueData.getPort()));
 		txtService.setText(queueData.getServiceName());
 		txtVideoDir.setText(queueData.getVideoPath());
 		chkEnableQueue.setChecked(queueData.isEnableQueue());
@@ -358,19 +363,21 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 			public void onClick(View v) {
 				String shopId = txtShopId.getText().toString();
 				String ip = txtIp.getText().toString();
+				int port = 5050;
 				String service = txtService.getText().toString();
 				String videoDir = txtVideoDir.getText().toString();
 				int interval = 1;
 				
 				try {
 					interval = Integer.parseInt(txtInterval.getText().toString()) * 1000;
+					port = Integer.parseInt(txtPort.getText().toString());
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
 				if(!shopId.equals("") && !ip.equals("") && !service.equals("")){
-					config.addConfig(Integer.parseInt(shopId), ip, service, interval, videoDir, "", 
+					config.addConfig(Integer.parseInt(shopId), ip, port, service, interval, videoDir, "", 
 							chkEnableQueue.isChecked(), chkEnableTake.isChecked());
 					
 					d.dismiss();
@@ -455,9 +462,57 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		mHideHandler.postDelayed(mHideRunnable, delayMillis);
 	}
 	
-	private void createQueue(){
-		Log.i("queue", "call queue " + queueData.getUpdateInterval());
+	private void drawTableQueue(QueueDisplayInfo qInfo){
 		final LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
+		
+		layoutA.removeAllViews();
+		layoutB.removeAllViews();
+		layoutC.removeAllViews();
+		
+		int totalQa = 0;
+		int totalQb = 0;
+		int totalQc = 0;
+		
+		for(QueueDisplayInfo.QueueInfo qData : qInfo.xListQueueInfo){
+			if(qData.getiQueueGroupID() == 1){
+				View vA = inflater.inflate(R.layout.queue_template, null);
+				TextView tvQ = (TextView) vA.findViewById(R.id.textViewQueue);
+				tvQ.setText(qData.getSzQueueName());
+				layoutA.addView(vA);
+				
+				totalQa++;
+			}
+			
+			if(qData.getiQueueGroupID() == 2){
+				View vB = inflater.inflate(R.layout.queue_template, null);
+				TextView tvQ = (TextView) vB.findViewById(R.id.textViewQueue);
+				tvQ.setText(qData.getSzQueueName());
+				layoutB.addView(vB);
+				
+				totalQb++;
+			}
+			
+			if(qData.getiQueueGroupID() == 3){
+				View vC = inflater.inflate(R.layout.queue_template, null);
+				TextView tvQ = (TextView) vC.findViewById(R.id.textViewQueue);
+				tvQ.setText(qData.getSzQueueName());
+				layoutC.addView(vC);
+				
+				totalQc++;
+			}
+		}
+		
+		tvSumQA.setText("A=" + Integer.toString(totalQa));
+		tvSumQB.setText("B=" + Integer.toString(totalQb));
+		tvSumQC.setText("C=" + Integer.toString(totalQc));
+		
+		tvCallA.setText(qInfo.getSzCurQueueGroupA());
+		tvCallB.setText(qInfo.getSzCurQueueGroupB());
+		tvCallC.setText(qInfo.getSzCurQueueGroupC());
+	}
+	
+	private void createQueueFromService(){
+		Log.i("queue", "call queue " + queueData.getUpdateInterval());
 		
 		// call service
 		new QueueDisplayService(QueueDisplayActivity.this, queueData.getShopId(), deviceCode, 
@@ -465,51 +520,7 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 			
 			@Override
 			public void onSuccess(QueueDisplayInfo qInfo) {
-
-				layoutA.removeAllViews();
-				layoutB.removeAllViews();
-				layoutC.removeAllViews();
-				
-				int totalQa = 0;
-				int totalQb = 0;
-				int totalQc = 0;
-				
-				for(QueueDisplayInfo.QueueInfo qData : qInfo.xListQueueInfo){
-					if(qData.getiQueueGroupID() == 1){
-						View vA = inflater.inflate(R.layout.queue_template, null);
-						TextView tvQ = (TextView) vA.findViewById(R.id.textViewQueue);
-						tvQ.setText(qData.getSzQueueName());
-						layoutA.addView(vA);
-						
-						totalQa++;
-					}
-					
-					if(qData.getiQueueGroupID() == 2){
-						View vB = inflater.inflate(R.layout.queue_template, null);
-						TextView tvQ = (TextView) vB.findViewById(R.id.textViewQueue);
-						tvQ.setText(qData.getSzQueueName());
-						layoutB.addView(vB);
-						
-						totalQb++;
-					}
-					
-					if(qData.getiQueueGroupID() == 3){
-						View vC = inflater.inflate(R.layout.queue_template, null);
-						TextView tvQ = (TextView) vC.findViewById(R.id.textViewQueue);
-						tvQ.setText(qData.getSzQueueName());
-						layoutC.addView(vC);
-						
-						totalQc++;
-					}
-				}
-				
-				tvSumQA.setText("A=" + Integer.toString(totalQa));
-				tvSumQB.setText("B=" + Integer.toString(totalQb));
-				tvSumQC.setText("C=" + Integer.toString(totalQc));
-				
-				tvCallA.setText(qInfo.getSzCurQueueGroupA());
-				tvCallB.setText(qInfo.getSzCurQueueGroupB());
-				tvCallC.setText(qInfo.getSzCurQueueGroupC());
+				drawTableQueue(qInfo);
 			}
 			
 			@Override
@@ -524,36 +535,36 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		}).execute(serviceUrl);
 	}
 	
-	private void createTakeAway(){
+	private void drawTakeAwayQueue(List<TakeAwayData> takeAwayLst){
+		takeAwayLayout.removeAllViews();
+		LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
+		for(final TakeAwayData takeAwayData : takeAwayLst){
+			View v = inflater.inflate(R.layout.take_away_template, null);
+			TextView tvName = (TextView) v.findViewById(R.id.textViewTakeName);
+			TextView tvTimeIn = (TextView) v.findViewById(R.id.textViewTakeTimeIn);
+			TextView tvStatus = (TextView) v.findViewById(R.id.textViewTakeStatus);
+			TextView tvNo = (TextView) v.findViewById(R.id.textViewTakeNo);
+			
+			tvNo.setText(takeAwayData.getSzQueueName());
+			tvNo.setSelected(true);
+			tvName.setText(takeAwayData.getSzTransName());
+			tvName.setSelected(true);
+			tvTimeIn.setText(takeAwayData.getSzStartDateTime());
+			tvTimeIn.setSelected(true);
+			tvStatus.setText(takeAwayData.getSzKdsStatusName());
+			tvStatus.setSelected(true);
+			takeAwayLayout.addView(v);
+		}
+	}
+	
+	private void createTakeAwayFromService(){
 		Log.i("take away queue", "call takeaway queue " + queueData.getUpdateInterval());
 		new QueueTakeAwayService(QueueDisplayActivity.this, queueData.getShopId(), deviceCode, 
 				new QueueTakeAwayService.Callback() {
 			
 			@Override
 			public void onSuccess(List<TakeAwayData> takeAwayLst) {
-
-				takeAwayLayout.removeAllViews();
-				
-				LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
-				
-				for(final TakeAwayData takeAwayData : takeAwayLst){
-					View v = inflater.inflate(R.layout.take_away_template, null);
-					TextView tvName = (TextView) v.findViewById(R.id.textViewTakeName);
-					TextView tvTimeIn = (TextView) v.findViewById(R.id.textViewTakeTimeIn);
-					TextView tvStatus = (TextView) v.findViewById(R.id.textViewTakeStatus);
-					TextView tvNo = (TextView) v.findViewById(R.id.textViewTakeNo);
-					
-					tvNo.setText(takeAwayData.getSzQueueName());
-					tvNo.setSelected(true);
-					tvName.setText(takeAwayData.getSzTransName());
-					tvName.setSelected(true);
-					tvTimeIn.setText(takeAwayData.getSzStartDateTime());
-					tvTimeIn.setSelected(true);
-					tvStatus.setText(takeAwayData.getSzKdsStatusName());
-					tvStatus.setSelected(true);
-					
-					takeAwayLayout.addView(v);
-				}
+				drawTakeAwayQueue(takeAwayLst);
 			}
 			
 			@Override
@@ -609,7 +620,7 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 	@Override
 	public void run() {
 		try {
-			socketConn = new ClientSocket(queueData.getServerIp(), 5555);
+			socketConn = new ClientSocket(queueData.getServerIp(), queueData.getPort());
 			String msg;
 			while ((msg = socketConn.receive()) != null) {
 				Log.d("msg", msg);
@@ -617,6 +628,7 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			new Thread(this).start();
 			e.printStackTrace();
 		}
 	}

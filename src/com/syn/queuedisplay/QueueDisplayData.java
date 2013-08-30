@@ -90,6 +90,7 @@ public class QueueDisplayData {
 			do{
 				config.setShopId(cursor.getInt(cursor.getColumnIndex("shop_id")));
 				config.setServerIp(cursor.getString(cursor.getColumnIndex("server_ip")));
+				config.setPort(cursor.getInt(cursor.getColumnIndex("port")));
 				config.setServiceName(cursor.getString(cursor.getColumnIndex("service_name")));
 				config.setVideoPath(cursor.getString(cursor.getColumnIndex("video_path")));
 				config.setLogoPath(cursor.getString(cursor.getColumnIndex("logo_path")));
@@ -102,7 +103,7 @@ public class QueueDisplayData {
 		return config;
 	}
 	
-	public void addConfig(int shopId, String ip, String serviceName, int updateInterval,
+	public void addConfig(int shopId, String ip, int port, String serviceName, int updateInterval,
 			String videoPath, String logoPath, boolean isEnableQueue, boolean isEnableTake){
 		ContentValues cv = new ContentValues();
 		cv.put("shop_id", shopId);
@@ -111,6 +112,7 @@ public class QueueDisplayData {
 		cv.put("update_interval", updateInterval);
 		cv.put("video_path", videoPath);
 		cv.put("logo_path", logoPath);
+		cv.put("port", port);
 		cv.put("is_enable_queue", isEnableQueue == true ? 1 : 0);
 		cv.put("is_enable_take", isEnableTake == true ? 1 : 0);
 		
