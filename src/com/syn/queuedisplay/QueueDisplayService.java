@@ -4,7 +4,7 @@ import java.lang.reflect.Type;
 
 import com.google.gson.reflect.TypeToken;
 import com.j1tth4.mobile.util.JSONUtil;
-import com.syn.mpos.model.QueueDisplayInfo;
+import com.syn.pos.QueueDisplayInfo;
 
 import android.content.Context;
 

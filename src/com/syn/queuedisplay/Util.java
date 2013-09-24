@@ -6,8 +6,8 @@ import java.util.List;
 
 import com.google.gson.reflect.TypeToken;
 import com.j1tth4.mobile.util.JSONUtil;
-import com.syn.mpos.model.QueueDisplayInfo;
-import com.syn.mpos.model.WebServiceResult;
+import com.syn.pos.QueueDisplayInfo;
+import com.syn.pos.WebServiceResult;
 
 public class Util {
 	public static List<TakeAwayData> toTakeAwayObj(String json)

@@ -1,10 +1,14 @@
 package com.syn.queuedisplay;
 
+import java.lang.reflect.Type;
 import java.util.List;
+
+import com.google.gson.reflect.TypeToken;
 import com.j1tth4.mobile.connection.socket.ClientSocket;
 import com.j1tth4.mobile.connection.socket.ISocketConnection;
+import com.j1tth4.mobile.util.JSONUtil;
 import com.j1tth4.mobile.util.MyMediaPlayer;
-import com.syn.mpos.model.QueueDisplayInfo;
+import com.syn.pos.QueueDisplayInfo;
 import com.syn.queuedisplay.util.SystemUiHider;
 
 import android.annotation.TargetApi;
@@ -97,6 +101,9 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 	private TextView tvCallA;
 	private TextView tvCallB;
 	private TextView tvCallC;
+	private TextView tvCallASub;
+	private TextView tvCallBSub;
+	private TextView tvCallCSub;
 	
 	private TextView tvSumQA;
 	private TextView tvSumQB;
@@ -120,10 +127,13 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		tvCallA = (TextView) findViewById(R.id.textViewCallA);
 		tvCallB = (TextView) findViewById(R.id.textViewCallB);
 		tvCallC = (TextView) findViewById(R.id.textViewCallC);
+		tvCallASub = (TextView) findViewById(R.id.tvCallASub);
+		tvCallBSub = (TextView) findViewById(R.id.tvCallBSub);
+		tvCallCSub = (TextView) findViewById(R.id.tvCallCSub);
 		tvSumQB = (TextView) findViewById(R.id.textViewSumQB);
 		tvSumQA = (TextView) findViewById(R.id.textViewSumQA);
 		tvSumQC = (TextView) findViewById(R.id.textViewSumQC);
-		tvPlaying = (TextView) findViewById(R.id.textViewPlaying);	
+		tvPlaying = (TextView) findViewById(R.id.textViewPlaying);
 		
 		deviceCode = Secure.getString(this.getContentResolver(),
 				Secure.ANDROID_ID);
@@ -472,12 +482,14 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		int totalQa = 0;
 		int totalQb = 0;
 		int totalQc = 0;
-		
+
 		for(QueueDisplayInfo.QueueInfo qData : qInfo.xListQueueInfo){
 			if(qData.getiQueueGroupID() == 1){
 				View vA = inflater.inflate(R.layout.queue_template, null);
 				TextView tvQ = (TextView) vA.findViewById(R.id.textViewQueue);
+				TextView tvSub = (TextView) vA.findViewById(R.id.tvQueueSub);
 				tvQ.setText(qData.getSzQueueName());
+				tvSub.setText(qData.getSzCustomerName());
 				layoutA.addView(vA);
 				
 				totalQa++;
@@ -486,7 +498,9 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 			if(qData.getiQueueGroupID() == 2){
 				View vB = inflater.inflate(R.layout.queue_template, null);
 				TextView tvQ = (TextView) vB.findViewById(R.id.textViewQueue);
+				TextView tvSub = (TextView) vB.findViewById(R.id.tvQueueSub);
 				tvQ.setText(qData.getSzQueueName());
+				tvSub.setText(qData.getSzCustomerName());
 				layoutB.addView(vB);
 				
 				totalQb++;
@@ -495,7 +509,9 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 			if(qData.getiQueueGroupID() == 3){
 				View vC = inflater.inflate(R.layout.queue_template, null);
 				TextView tvQ = (TextView) vC.findViewById(R.id.textViewQueue);
+				TextView tvSub = (TextView) vC.findViewById(R.id.tvQueueSub);
 				tvQ.setText(qData.getSzQueueName());
+				tvSub.setText(qData.getSzCustomerName());
 				layoutC.addView(vC);
 				
 				totalQc++;
@@ -509,6 +525,9 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		tvCallA.setText(qInfo.getSzCurQueueGroupA());
 		tvCallB.setText(qInfo.getSzCurQueueGroupB());
 		tvCallC.setText(qInfo.getSzCurQueueGroupC());
+		tvCallASub.setText(qInfo.getSzCurQueueCustomerA());
+		tvCallBSub.setText(qInfo.getSzCurQueueCustomerB());
+		tvCallCSub.setText(qInfo.getSzCurQueueCustomerC());
 	}
 	
 	private void createQueueFromService(){
@@ -520,6 +539,12 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 			
 			@Override
 			public void onSuccess(QueueDisplayInfo qInfo) {
+//				JSONUtil jsonUtil = new JSONUtil();
+//				Type type = new TypeToken<QueueDisplayInfo>() {}.getType();
+//				String result = "{\"xListQueueInfo\":[{\"iQueueID\":8,\"iQueueIndex\":3,\"iQueueGroupID\":1,\"szQueueName\":\"A3\",\"szCustomerName\":\"testing\",\"iCustomerQty\":3,\"szStartQueueDate\":\"2013-09-24 15:01:29\",\"iWaitQueueMinTime\":23,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":7,\"iQueueIndex\":1,\"iQueueGroupID\":2,\"szQueueName\":\"B1\",\"szCustomerName\":\"testing\",\"iCustomerQty\":3,\"szStartQueueDate\":\"2013-09-24 14:19:45\",\"iWaitQueueMinTime\":65,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":5,\"iQueueIndex\":1,\"iQueueGroupID\":3,\"szQueueName\":\"C1\",\"szCustomerName\":\"jjjj\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 13:50:48\",\"iWaitQueueMinTime\":94,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":6,\"iQueueIndex\":2,\"iQueueGroupID\":3,\"szQueueName\":\"C2\",\"szCustomerName\":\"kkk\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 14:12:30\",\"iWaitQueueMinTime\":72,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0}],\"szCurQueueGroupA\":\"\",\"szCurQueueCustomerA\":\"\",\"szCurQueueGroupB\":\"\",\"szCurQueueCustomerB\":\"\",\"szCurQueueGroupC\":\"\",\"szCurQueueCustomerC\":\"\"}";
+//				
+//				qInfo = (QueueDisplayInfo) jsonUtil.toObject(type, result);
+//				
 				drawTableQueue(qInfo);
 			}
 			

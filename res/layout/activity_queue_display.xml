@@ -196,17 +196,41 @@
                             android:layout_weight="1"
                             android:orientation="vertical" >
 
-                            <TextView
-                                android:id="@+id/textViewCallA"
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="1dp"
                                 android:background="@color/background_dark"
-                                android:gravity="center"
-                                android:textAppearance="?android:attr/textAppearanceLarge"
-                                android:textColor="@android:color/holo_blue_light"
-                                android:textSize="48sp"
-                                android:textStyle="bold" />
+                                android:orientation="vertical"
+                                android:padding="4dp" >
+
+                                <TextView
+                                    android:id="@+id/textViewCallA"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="marquee"
+                                    android:gravity="center"
+                                    android:lines="1"
+                                    android:marqueeRepeatLimit="marquee_forever"
+                                    android:scrollHorizontally="true"
+                                    android:textAppearance="?android:attr/textAppearanceLarge"
+                                    android:textColor="@android:color/holo_blue_light"
+                                    android:textSize="48sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvCallASub"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="marquee"
+                                    android:fadingEdge="horizontal"
+                                    android:lines="1"
+                                    android:marqueeRepeatLimit="marquee_forever"
+                                    android:scrollHorizontally="true"
+                                    android:singleLine="true"
+                                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                            </LinearLayout>
 
                             <LinearLayout
                                 android:id="@+id/queueALayout"
@@ -237,17 +261,40 @@
                             android:layout_weight="1"
                             android:orientation="vertical" >
 
-                            <TextView
-                                android:id="@+id/textViewCallB"
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="1dp"
                                 android:background="@color/background_dark"
-                                android:gravity="center"
-                                android:textAppearance="?android:attr/textAppearanceLarge"
-                                android:textColor="@android:color/holo_blue_light"
-                                android:textSize="48sp"
-                                android:textStyle="bold" />
+                                android:orientation="vertical"
+                                android:padding="4dp" >
+
+                                <TextView
+                                    android:id="@+id/textViewCallB"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="marquee"
+                                    android:gravity="center"
+                                    android:lines="1"
+                                    android:marqueeRepeatLimit="marquee_forever"
+                                    android:textAppearance="?android:attr/textAppearanceLarge"
+                                    android:textColor="@android:color/holo_blue_light"
+                                    android:textSize="48sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvCallBSub"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="marquee"
+                                    android:fadingEdge="horizontal"
+                                    android:lines="1"
+                                    android:marqueeRepeatLimit="marquee_forever"
+                                    android:scrollHorizontally="true"
+                                    android:singleLine="true"
+                                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                            </LinearLayout>
 
                             <LinearLayout
                                 android:id="@+id/queueBLayout"
@@ -268,6 +315,7 @@
                                 android:textAppearance="?android:attr/textAppearanceLarge"
                                 android:textSize="32sp"
                                 android:textStyle="bold" />
+
                         </LinearLayout>
 
                         <LinearLayout
@@ -277,17 +325,41 @@
                             android:layout_weight="1"
                             android:orientation="vertical" >
 
-                            <TextView
-                                android:id="@+id/textViewCallC"
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="1dp"
                                 android:background="@color/background_dark"
-                                android:gravity="center"
-                                android:textAppearance="?android:attr/textAppearanceLarge"
-                                android:textColor="@android:color/holo_blue_light"
-                                android:textSize="48sp"
-                                android:textStyle="bold" />
+                                android:orientation="vertical"
+                                android:padding="4dp" >
+
+                                <TextView
+                                    android:id="@+id/textViewCallC"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="marquee"
+                                    android:gravity="center"
+                                    android:lines="1"
+                                    android:marqueeRepeatLimit="marquee_forever"
+                                    android:scrollHorizontally="true"
+                                    android:textAppearance="?android:attr/textAppearanceLarge"
+                                    android:textColor="@android:color/holo_blue_light"
+                                    android:textSize="48sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvCallCSub"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="marquee"
+                                    android:fadingEdge="horizontal"
+                                    android:lines="1"
+                                    android:marqueeRepeatLimit="marquee_forever"
+                                    android:scrollHorizontally="true"
+                                    android:singleLine="true"
+                                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                            </LinearLayout>
 
                             <LinearLayout
                                 android:id="@+id/queueCLayout"
@@ -341,7 +413,8 @@
                     android:layout_alignTop="@+id/btnPause"
                     android:layout_toRightOf="@+id/btnPause"
                     android:onClick="videoNextClicked"
-                    android:src="@android:drawable/ic_media_next" />
+                    android:src="@android:drawable/ic_media_next"
+                    android:visibility="invisible" />
 
                 <ImageButton
                     android:id="@+id/btnPause"
@@ -351,7 +424,8 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="23dp"
                     android:onClick="videoPauseClicked"
-                    android:src="@android:drawable/ic_media_pause" />
+                    android:src="@android:drawable/ic_media_pause"
+                    android:visibility="invisible" />
 
                 <ImageButton
                     android:id="@+id/btnBack"
@@ -360,7 +434,8 @@
                     android:layout_alignTop="@+id/btnPause"
                     android:layout_toLeftOf="@+id/btnPause"
                     android:onClick="videoBackClicked"
-                    android:src="@android:drawable/ic_media_previous" />
+                    android:src="@android:drawable/ic_media_previous"
+                    android:visibility="invisible" />
 
                 <TextView
                     android:id="@+id/textViewPlaying"
