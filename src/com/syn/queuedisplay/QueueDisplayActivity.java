@@ -3,8 +3,12 @@ package com.syn.queuedisplay;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.google.gson.reflect.TypeToken;
 import com.j1tth4.mobile.connection.socket.ClientSocket;
@@ -14,6 +18,7 @@ import com.j1tth4.mobile.util.MyMediaPlayer;
 import com.syn.pos.QueueDisplayInfo;
 import com.syn.queuedisplay.util.SystemUiHider;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -86,7 +91,7 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 	private Handler handlerTake;
 	private MyMediaPlayer myMediaPlayer;
 	private boolean isPause = false;
-	private Date d;
+	private Date date;
 	
 	private QueueDisplayData config;
 	private ISocketConnection socketConn;
@@ -274,7 +279,6 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		ScrollTextView tvMarquee = new ScrollTextView(QueueDisplayActivity.this);
 		LayoutParams param = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		tvMarquee.setLayoutParams(param);
-		tvMarquee.setTextAppearance(QueueDisplayActivity.this, android.R.style.TextAppearance_DeviceDefault_Medium);
 		for(QueueData.MarqueeText marquee : marqueeLst){
 			tvMarquee.append(marquee.getTextVal());
 			for(int i = 0; i< 10; i ++){
@@ -543,12 +547,12 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 			
 			@Override
 			public void onSuccess(QueueDisplayInfo qInfo) {
-				JSONUtil jsonUtil = new JSONUtil();
-				Type type = new TypeToken<QueueDisplayInfo>() {}.getType();
-				String result = "{\"xListQueueInfo\":[{\"iQueueID\":8,\"iQueueIndex\":3,\"iQueueGroupID\":1,\"szQueueName\":\"A3\",\"szCustomerName\":\"testing\",\"iCustomerQty\":3,\"szStartQueueDate\":\"2013-09-24 15:01:29\",\"iWaitQueueMinTime\":23,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":7,\"iQueueIndex\":1,\"iQueueGroupID\":2,\"szQueueName\":\"B1\",\"szCustomerName\":\"testing\",\"iCustomerQty\":3,\"szStartQueueDate\":\"2013-09-24 14:19:45\",\"iWaitQueueMinTime\":65,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":5,\"iQueueIndex\":1,\"iQueueGroupID\":3,\"szQueueName\":\"C1\",\"szCustomerName\":\"jjjj\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 13:50:48\",\"iWaitQueueMinTime\":94,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":6,\"iQueueIndex\":2,\"iQueueGroupID\":3,\"szQueueName\":\"C2\",\"szCustomerName\":\"kkk\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 14:12:30\",\"iWaitQueueMinTime\":72,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0}],\"szCurQueueGroupA\":\"A1\",\"szCurQueueCustomerA\":\"Customer name a\",\"szCurQueueGroupB\":\"B1\",\"szCurQueueCustomerB\":\"Customer name b\",\"szCurQueueGroupC\":\"C1\",\"szCurQueueCustomerC\":\"Customer name c\"}";
-				
-				qInfo = (QueueDisplayInfo) jsonUtil.toObject(type, result);
+//				JSONUtil jsonUtil = new JSONUtil();
+//				Type type = new TypeToken<QueueDisplayInfo>() {}.getType();
+//				String result = "{\"xListQueueInfo\":[{\"iQueueID\":8,\"iQueueIndex\":3,\"iQueueGroupID\":1,\"szQueueName\":\"A3\",\"szCustomerName\":\"testing\",\"iCustomerQty\":3,\"szStartQueueDate\":\"2013-09-24 15:01:29\",\"iWaitQueueMinTime\":23,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":7,\"iQueueIndex\":1,\"iQueueGroupID\":2,\"szQueueName\":\"B1\",\"szCustomerName\":\"testing\",\"iCustomerQty\":3,\"szStartQueueDate\":\"2013-09-24 14:19:45\",\"iWaitQueueMinTime\":65,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":5,\"iQueueIndex\":1,\"iQueueGroupID\":3,\"szQueueName\":\"C1\",\"szCustomerName\":\"jjjj\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 13:50:48\",\"iWaitQueueMinTime\":94,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":6,\"iQueueIndex\":2,\"iQueueGroupID\":3,\"szQueueName\":\"C2\",\"szCustomerName\":\"kkk\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 14:12:30\",\"iWaitQueueMinTime\":72,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0}],\"szCurQueueGroupA\":\"A1\",\"szCurQueueCustomerA\":\"Customer name a\",\"szCurQueueGroupB\":\"B1\",\"szCurQueueCustomerB\":\"Customer name b\",\"szCurQueueGroupC\":\"C1\",\"szCurQueueCustomerC\":\"Customer name c\"}";
 //				
+//				qInfo = (QueueDisplayInfo) jsonUtil.toObject(type, result);
+////				
 				drawTableQueue(qInfo);
 			}
 			
@@ -567,10 +571,11 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 	private void drawTakeAwayQueue(List<TakeAwayData> takeAwayLst){
 		takeAwayLayout.removeAllViews();
 		LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
+		
 		for(final TakeAwayData takeAwayData : takeAwayLst){
 			View v = inflater.inflate(R.layout.take_away_template, null);
 			TextView tvName = (TextView) v.findViewById(R.id.textViewTakeName);
-			final TextView tvTimeIn = (TextView) v.findViewById(R.id.textViewTakeTimeIn);
+			final TextView tvWait = (TextView) v.findViewById(R.id.textViewWaitingTime);
 			TextView tvStatus = (TextView) v.findViewById(R.id.textViewTakeStatus);
 			TextView tvNo = (TextView) v.findViewById(R.id.textViewTakeNo);
 			
@@ -580,31 +585,43 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 			tvName.setSelected(true);
 			tvStatus.setText(takeAwayData.getSzKdsStatusName());
 			tvStatus.setSelected(true);
-			tvTimeIn.setSelected(true);
-		
-			d = new Date();
-			final String format = "mm:ss";
-			try {
-				d = new SimpleDateFormat(format).parse("09:12");
-			} catch (ParseException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			new Thread(new Runnable(){
+
+			new Thread(new Runnable() {
 
 				@Override
 				public void run() {
+					final Calendar c = Calendar.getInstance(Locale.getDefault());
+
 					try {
-						Thread.sleep(1000);
-						SimpleDateFormat df = new SimpleDateFormat(format);
-						tvTimeIn.setText(df.format(d));
-					} catch (InterruptedException e) {
+						date = new SimpleDateFormat("mm:ss").parse(takeAwayData.getSzStartDateTime());
+						c.setTime(date);
+					} catch (ParseException e1) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						e1.printStackTrace();
+					}
+
+					while (true) {
+						runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								SimpleDateFormat df = new SimpleDateFormat(
+										"mm:ss");
+								c.add(Calendar.SECOND, 1);
+								tvWait.setText(df.format(c.getTime()));
+							}
+						});
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
+
 			}).start();
-			
+
 			takeAwayLayout.addView(v);
 		}
 	}
