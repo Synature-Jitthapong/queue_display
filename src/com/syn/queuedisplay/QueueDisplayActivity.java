@@ -29,6 +29,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings.Secure;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,10 +42,12 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.webkit.WebView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -92,7 +95,6 @@ public class QueueDisplayActivity extends Activity{
 	private Handler handlerTake;
 	private MyMediaPlayer myMediaPlayer;
 	private boolean isPause = false;
-	private Date date;
 	
 	private QueueDisplayData config;
 	private ISocketConnection socketConn;
@@ -101,7 +103,7 @@ public class QueueDisplayActivity extends Activity{
 	private MarqueeAdapter marqueeAdapter;
 	private SurfaceView surface;
 	
-	private LinearLayout marqueeContent;
+	private WebView mWebView;
 	private LinearLayout queueTakeLayout;
 	private LinearLayout takeAwayLayout;
 	private LinearLayout queueLayout;
@@ -127,7 +129,7 @@ public class QueueDisplayActivity extends Activity{
 		setContentView(R.layout.activity_queue_display);
 		final View contentView = findViewById(R.id.queue_layout);
 		surface = (SurfaceView) findViewById(R.id.surfaceView1);
-		marqueeContent = (LinearLayout) findViewById(R.id.marqueeContent);
+		mWebView = (WebView) findViewById(R.id.webView1);
 		takeAwayLayout = (LinearLayout) findViewById(R.id.takeAwayLayout);
 		queueTakeLayout = (LinearLayout) findViewById(R.id.layoutQueueTake);
 		queueLayout = (LinearLayout) findViewById(R.id.layoutQueue);
@@ -277,19 +279,18 @@ public class QueueDisplayActivity extends Activity{
 	}
 	
 	private void createMarqueeText(){
-		ScrollTextView tvMarquee = new ScrollTextView(QueueDisplayActivity.this);
-		LayoutParams param = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		tvMarquee.setLayoutParams(param);
+		StringBuilder strHtml = new StringBuilder();
+		StringBuilder strInfoText = new StringBuilder();
 		for(QueueData.MarqueeText marquee : marqueeLst){
-			tvMarquee.append(marquee.getTextVal());
+			strInfoText.append(marquee.getTextVal());
 			for(int i = 0; i< 10; i ++){
-				tvMarquee.append("\t");
+				strInfoText.append("\t");
 			}
 		}
-		tvMarquee.setmRndDuration(35000);
-		tvMarquee.startScroll();
-		marqueeContent.removeAllViews();
-		marqueeContent.addView(tvMarquee);
+		strHtml.append("<html><body style=\"background:#000;\"><FONT COLOR=\"#FFF\"><marquee direction=\"Left\" style=\"width: auto;\" >");
+		strHtml.append(strInfoText);
+		strHtml.append("</marquee></FONT></body></html>");
+		mWebView.loadDataWithBaseURL(null, strHtml.toString(), "text/html", "UTF-8", null);
 	}
 	
 	private void popupSetting(){
@@ -492,6 +493,7 @@ public class QueueDisplayActivity extends Activity{
 		int totalQb = 0;
 		int totalQc = 0;
 
+		int i = 0;
 		for(QueueDisplayInfo.QueueInfo qData : qInfo.xListQueueInfo){
 			if(qData.getiQueueGroupID() == 1){
 				View vA = inflater.inflate(R.layout.queue_template, null);
@@ -499,6 +501,13 @@ public class QueueDisplayActivity extends Activity{
 				TextView tvSub = (TextView) vA.findViewById(R.id.tvQueueSub);
 				tvQ.setText(qData.getSzQueueName());
 				tvSub.setText(qData.getSzCustomerName());
+
+				if(i % 2 == 0){
+					vA.setBackgroundResource(android.R.color.transparent);
+				}else{
+					vA.setBackgroundResource(R.color.list_background_dark);
+				}
+				
 				layoutA.addView(vA);
 				
 				totalQa++;
@@ -510,6 +519,13 @@ public class QueueDisplayActivity extends Activity{
 				TextView tvSub = (TextView) vB.findViewById(R.id.tvQueueSub);
 				tvQ.setText(qData.getSzQueueName());
 				tvSub.setText(qData.getSzCustomerName());
+
+				if(i % 2 == 0){
+					vB.setBackgroundResource(android.R.color.transparent);
+				}else{
+					vB.setBackgroundResource(R.color.list_background_dark);
+				}
+				
 				layoutB.addView(vB);
 				
 				totalQb++;
@@ -521,10 +537,19 @@ public class QueueDisplayActivity extends Activity{
 				TextView tvSub = (TextView) vC.findViewById(R.id.tvQueueSub);
 				tvQ.setText(qData.getSzQueueName());
 				tvSub.setText(qData.getSzCustomerName());
+
+				if(i % 2 == 0){
+					vC.setBackgroundResource(android.R.color.transparent);
+				}else{
+					vC.setBackgroundResource(R.color.list_background_dark);
+				}
+				
 				layoutC.addView(vC);
 				
 				totalQc++;
 			}
+			
+			i++;
 		}
 		
 		tvSumQA.setText(Integer.toString(totalQa));
@@ -553,7 +578,7 @@ public class QueueDisplayActivity extends Activity{
 //				String result = "{\"xListQueueInfo\":[{\"iQueueID\":8,\"iQueueIndex\":3,\"iQueueGroupID\":1,\"szQueueName\":\"A3\",\"szCustomerName\":\"testing\",\"iCustomerQty\":3,\"szStartQueueDate\":\"2013-09-24 15:01:29\",\"iWaitQueueMinTime\":23,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":7,\"iQueueIndex\":1,\"iQueueGroupID\":2,\"szQueueName\":\"B1\",\"szCustomerName\":\"testing\",\"iCustomerQty\":3,\"szStartQueueDate\":\"2013-09-24 14:19:45\",\"iWaitQueueMinTime\":65,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":5,\"iQueueIndex\":1,\"iQueueGroupID\":3,\"szQueueName\":\"C1\",\"szCustomerName\":\"jjjj\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 13:50:48\",\"iWaitQueueMinTime\":94,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":6,\"iQueueIndex\":2,\"iQueueGroupID\":3,\"szQueueName\":\"C2\",\"szCustomerName\":\"kkk\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 14:12:30\",\"iWaitQueueMinTime\":72,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0}],\"szCurQueueGroupA\":\"A1\",\"szCurQueueCustomerA\":\"Customer name a\",\"szCurQueueGroupB\":\"B1\",\"szCurQueueCustomerB\":\"Customer name b\",\"szCurQueueGroupC\":\"C1\",\"szCurQueueCustomerC\":\"Customer name c\"}";
 //				
 //				qInfo = (QueueDisplayInfo) jsonUtil.toObject(type, result);
-////				
+
 				drawTableQueue(qInfo);
 			}
 			
@@ -569,9 +594,53 @@ public class QueueDisplayActivity extends Activity{
 		}).execute(serviceUrl);
 	}
 	
+	private class WaitingTimeTask extends TimerTask{
+
+		TextView tv;
+		Calendar c;
+		Date d;
+		
+		public WaitingTimeTask(TextView tv, String time){
+			this.tv = tv;
+			c = Calendar.getInstance(Locale.getDefault());
+
+			try {
+				d = new SimpleDateFormat("mm:ss").parse(time);
+				c.setTime(d);
+			} catch (ParseException e1) {
+				c.setTime(new Date());
+				e1.printStackTrace();
+			}
+		}
+		
+		@Override
+		public void run() {
+			runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+						SimpleDateFormat df = new SimpleDateFormat(
+								"mm:ss");
+						c.add(Calendar.SECOND, 1);
+						
+						tv.setText(df.format(c.getTime()));
+					} catch (Exception e) {
+						Log.d("CastDate", e.getMessage());
+						e.printStackTrace();
+					}
+				}
+			});
+		}
+		
+	}
+	
 	private void drawTakeAwayQueue(List<TakeAwayData> takeAwayLst){
 		takeAwayLayout.removeAllViews();
 		LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
+		Timer myTimer = null;
+		
+		int i = 0;
 		for(final TakeAwayData takeAwayData : takeAwayLst){
 			View v = inflater.inflate(R.layout.take_away_template, null);
 			TextView tvName = (TextView) v.findViewById(R.id.textViewTakeName);
@@ -586,82 +655,30 @@ public class QueueDisplayActivity extends Activity{
 			tvStatus.setText(takeAwayData.getSzKdsStatusName());
 			tvStatus.setSelected(true);
 
-			final Handler waitTimeHandler = new Handler();
-			waitTimeHandler.post(new Runnable(){
+			myTimer = new Timer();
+			myTimer.schedule(new WaitingTimeTask(tvWait, 
+					takeAwayData.getSzStartDateTime()), 1000, 1000);
 
-				@Override
-				public void run() {
-					final Calendar c = Calendar.getInstance(Locale.getDefault());
-
-					try {
-						date = new SimpleDateFormat("mm:ss").parse(takeAwayData.getSzStartDateTime());
-						c.setTime(date);
-					} catch (ParseException e1) {
-						c.setTime(new Date());
-						e1.printStackTrace();
-					}
-					
-					try {
-						SimpleDateFormat df = new SimpleDateFormat(
-								"mm:ss");
-						c.add(Calendar.SECOND, 1);
-						tvWait.setText(df.format(c.getTime()));
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-					waitTimeHandler.postDelayed(this, 1000);	
-				}
-			});
-			
-//			final Thread t = new Thread(new Runnable() {
-//
-//				@Override
-//				public void run() {
-//					final Calendar c = Calendar.getInstance(Locale.getDefault());
-//
-//					try {
-//						date = new SimpleDateFormat("mm:ss").parse(takeAwayData.getSzStartDateTime());
-//						c.setTime(date);
-//					} catch (ParseException e1) {
-//						c.setTime(new Date());
-//						e1.printStackTrace();
-//					}
-//
-//					while (true) {
-//						
-//						runOnUiThread(new Runnable() {
-//
-//							@Override
-//							public void run() {
-//								try {
-//									SimpleDateFormat df = new SimpleDateFormat(
-//											"mm:ss");
-//									c.add(Calendar.SECOND, 1);
-//									tvWait.setText(df.format(c.getTime()));
-//								} catch (Exception e) {
-//									// TODO Auto-generated catch block
-//									e.printStackTrace();
-//								}
-//							}
-//						});
-//						
-//						try {
-//							Thread.currentThread().sleep(1000);
-//						} catch (InterruptedException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-//						
-//					}
-//				}
-//			});
-//
-//			if(!takeAwayData.getSzStartDateTime().isEmpty())
-//				t.start();
+			if(i % 2 == 0){
+				v.setBackgroundResource(android.R.color.transparent);
+			}else{
+				v.setBackgroundResource(R.color.list_background_dark);
+			}
 			
 			takeAwayLayout.addView(v);
+			
+			if(i == 5)
+				break;
+			
+			i++;
+		}
+		
+		try {
+			myTimer.cancel();
+			myTimer.purge();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	

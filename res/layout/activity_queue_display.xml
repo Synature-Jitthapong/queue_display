@@ -21,7 +21,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@color/background_dark"
         android:orientation="vertical" >
@@ -150,8 +150,7 @@
                     <ScrollView
                         android:id="@+id/scroll_take_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/black_overlay" >
+                        android:layout_height="match_parent" >
 
                         <LinearLayout
                             android:id="@+id/takeAwayLayout"
@@ -514,12 +513,10 @@
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/marqueeContent"
+    <WebView
+        android:id="@+id/webView1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal" >
-    </LinearLayout>
+        android:background="@color/background_dark" />
 
 </LinearLayout>
