@@ -55,7 +55,7 @@ import android.widget.TextView;
  * 
  * @see SystemUiHider
  */
-public class QueueDisplayActivity extends Activity implements Runnable{
+public class QueueDisplayActivity extends Activity{
 	/**
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -571,7 +571,7 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 	private void drawTakeAwayQueue(List<TakeAwayData> takeAwayLst){
 		takeAwayLayout.removeAllViews();
 		LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
-		
+		Thread t;
 		for(final TakeAwayData takeAwayData : takeAwayLst){
 			View v = inflater.inflate(R.layout.take_away_template, null);
 			TextView tvName = (TextView) v.findViewById(R.id.textViewTakeName);
@@ -586,7 +586,7 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 			tvStatus.setText(takeAwayData.getSzKdsStatusName());
 			tvStatus.setSelected(true);
 
-			new Thread(new Runnable() {
+			t = new Thread(new Runnable() {
 
 				@Override
 				public void run() {
@@ -596,34 +596,43 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 						date = new SimpleDateFormat("mm:ss").parse(takeAwayData.getSzStartDateTime());
 						c.setTime(date);
 					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
+						c.setTime(new Date());
 						e1.printStackTrace();
 					}
 
 					while (true) {
-						runOnUiThread(new Runnable() {
-
-							@Override
-							public void run() {
-								SimpleDateFormat df = new SimpleDateFormat(
-										"mm:ss");
-								c.add(Calendar.SECOND, 1);
-								tvWait.setText(df.format(c.getTime()));
-							}
-						});
 						try {
 							Thread.sleep(1000);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+						
+						runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								try {
+									SimpleDateFormat df = new SimpleDateFormat(
+											"mm:ss");
+									c.add(Calendar.SECOND, 1);
+									tvWait.setText(df.format(c.getTime()));
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						});
 					}
 				}
+			});
 
-			}).start();
-
+			if(!takeAwayData.getSzStartDateTime().isEmpty())
+				t.start();
+			
 			takeAwayLayout.addView(v);
 		}
+		
 	}
 	
 	private void createTakeAwayFromService(){
@@ -686,21 +695,21 @@ public class QueueDisplayActivity extends Activity implements Runnable{
 		myMediaPlayer.next();
 	}
 	
-	@Override
-	public void run() {
-		try {
-			socketConn = new ClientSocket(queueData.getServerIp(), queueData.getPort());
-			String msg;
-			while ((msg = socketConn.receive()) != null) {
-				Log.d("msg", msg);
-				
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			new Thread(this).start();
-			e.printStackTrace();
-		}
-	}
+//	@Override
+//	public void run() {
+//		try {
+//			socketConn = new ClientSocket(queueData.getServerIp(), queueData.getPort());
+//			String msg;
+//			while ((msg = socketConn.receive()) != null) {
+//				Log.d("msg", msg);
+//				
+//			}
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			new Thread(this).start();
+//			e.printStackTrace();
+//		}
+//	}
 	
 	private class MarqueeAdapter extends BaseAdapter{
 		private LayoutInflater inflater;
