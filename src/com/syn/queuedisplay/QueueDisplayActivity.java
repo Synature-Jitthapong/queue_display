@@ -27,6 +27,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.provider.Settings.Secure;
 import android.util.Log;
@@ -571,7 +572,6 @@ public class QueueDisplayActivity extends Activity{
 	private void drawTakeAwayQueue(List<TakeAwayData> takeAwayLst){
 		takeAwayLayout.removeAllViews();
 		LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
-		Thread t;
 		for(final TakeAwayData takeAwayData : takeAwayLst){
 			View v = inflater.inflate(R.layout.take_away_template, null);
 			TextView tvName = (TextView) v.findViewById(R.id.textViewTakeName);
@@ -586,7 +586,8 @@ public class QueueDisplayActivity extends Activity{
 			tvStatus.setText(takeAwayData.getSzKdsStatusName());
 			tvStatus.setSelected(true);
 
-			t = new Thread(new Runnable() {
+			final Handler waitTimeHandler = new Handler();
+			waitTimeHandler.post(new Runnable(){
 
 				@Override
 				public void run() {
@@ -599,40 +600,69 @@ public class QueueDisplayActivity extends Activity{
 						c.setTime(new Date());
 						e1.printStackTrace();
 					}
-
-					while (true) {
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						
-						runOnUiThread(new Runnable() {
-
-							@Override
-							public void run() {
-								try {
-									SimpleDateFormat df = new SimpleDateFormat(
-											"mm:ss");
-									c.add(Calendar.SECOND, 1);
-									tvWait.setText(df.format(c.getTime()));
-								} catch (Exception e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							}
-						});
+					
+					try {
+						SimpleDateFormat df = new SimpleDateFormat(
+								"mm:ss");
+						c.add(Calendar.SECOND, 1);
+						tvWait.setText(df.format(c.getTime()));
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
+					
+					waitTimeHandler.postDelayed(this, 1000);	
 				}
 			});
-
-			if(!takeAwayData.getSzStartDateTime().isEmpty())
-				t.start();
+			
+//			final Thread t = new Thread(new Runnable() {
+//
+//				@Override
+//				public void run() {
+//					final Calendar c = Calendar.getInstance(Locale.getDefault());
+//
+//					try {
+//						date = new SimpleDateFormat("mm:ss").parse(takeAwayData.getSzStartDateTime());
+//						c.setTime(date);
+//					} catch (ParseException e1) {
+//						c.setTime(new Date());
+//						e1.printStackTrace();
+//					}
+//
+//					while (true) {
+//						
+//						runOnUiThread(new Runnable() {
+//
+//							@Override
+//							public void run() {
+//								try {
+//									SimpleDateFormat df = new SimpleDateFormat(
+//											"mm:ss");
+//									c.add(Calendar.SECOND, 1);
+//									tvWait.setText(df.format(c.getTime()));
+//								} catch (Exception e) {
+//									// TODO Auto-generated catch block
+//									e.printStackTrace();
+//								}
+//							}
+//						});
+//						
+//						try {
+//							Thread.currentThread().sleep(1000);
+//						} catch (InterruptedException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//						
+//					}
+//				}
+//			});
+//
+//			if(!takeAwayData.getSzStartDateTime().isEmpty())
+//				t.start();
 			
 			takeAwayLayout.addView(v);
 		}
-		
 	}
 	
 	private void createTakeAwayFromService(){
@@ -662,6 +692,8 @@ public class QueueDisplayActivity extends Activity{
 	protected void onPause() {
 		isTakeRun = false;
 		isQueueRun = false;
+		handlerTake.removeCallbacks(updateQueueTake);
+		handlerQueue.removeCallbacks(updateQueue);
 		myMediaPlayer.releaseMediaPlayer();
 		super.onPause();
 	}
@@ -670,6 +702,8 @@ public class QueueDisplayActivity extends Activity{
 	protected void onDestroy() {
 		isTakeRun = false;
 		isQueueRun = false;
+		handlerTake.removeCallbacks(updateQueueTake);
+		handlerQueue.removeCallbacks(updateQueue);
 		myMediaPlayer.releaseMediaPlayer();
 		super.onDestroy();
 	}
