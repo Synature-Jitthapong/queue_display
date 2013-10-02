@@ -615,16 +615,16 @@ public class QueueDisplayActivity extends Activity{
 		}).execute(serviceUrl);
 	}
 	
-	private class WaitingTimeTask extends TimerTask{
+	private final class WaitingTimeTask extends TimerTask {
 
-		TextView tv;
-		Calendar c;
-		Date d;
-		Handler handler;
+		private TextView tv;
+		private Calendar c;
+		private Date d;
+		private Handler myHandler;
 		
-		public WaitingTimeTask(TextView tv, String time){
-			handler = new Handler();
-			this.tv = tv;
+		public WaitingTimeTask(TextView textView, String time) {
+			myHandler = new Handler();
+			this.tv = textView;
 			c = Calendar.getInstance(Locale.getDefault());
 
 			try {
@@ -635,10 +635,10 @@ public class QueueDisplayActivity extends Activity{
 				e1.printStackTrace();
 			}
 		}
-		
+
 		@Override
 		public void run() {
-			handler.post(new Runnable(){
+			myHandler.post(new Runnable(){
 
 				@Override
 				public void run() {
@@ -654,29 +654,15 @@ public class QueueDisplayActivity extends Activity{
 				}
 				
 			});
-//			runOnUiThread(new Runnable() {
-//
-//				@Override
-//				public void run() {
-//					try {
-//						SimpleDateFormat df = new SimpleDateFormat(
-//								"mm:ss");
-//						c.add(Calendar.SECOND, 1);
-//						
-//						//tv.setText(df.format(c.getTime()));
-//					} catch (Exception e) {
-//						Log.d("CastDate", e.getMessage());
-//						e.printStackTrace();
-//					}
-//				}
-//			});
 		}
-		
+
 	}
 	
 	private void drawTakeAwayQueue(List<TakeAwayData> takeAwayLst){
 		takeAwayLayout.removeAllViews();
 		
+		Timer myTimer = new Timer();
+
 		int i = 0;
 		for(final TakeAwayData takeAwayData : takeAwayLst){
 			View v = mInflater.inflate(R.layout.take_away_template, null);
@@ -693,7 +679,6 @@ public class QueueDisplayActivity extends Activity{
 			//tvStatus.setSelected(true);
 			tvWait.setText(takeAwayData.getSzStartDateTime());
 			
-			Timer myTimer = new Timer();
 			myTimer.schedule(new WaitingTimeTask(tvWait, 
 					takeAwayData.getSzStartDateTime()), 1000, 1000);
 
@@ -710,9 +695,6 @@ public class QueueDisplayActivity extends Activity{
 			}
 
 			takeAwayLayout.addView(v);
-			
-			if(i == 5)
-				break;
 			
 			i++;
 		}
