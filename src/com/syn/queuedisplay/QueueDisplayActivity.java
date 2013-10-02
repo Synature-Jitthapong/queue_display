@@ -25,6 +25,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -121,11 +123,15 @@ public class QueueDisplayActivity extends Activity{
 	private TextView tvSumQB;
 	private TextView tvSumQC;
 	private TextView tvPlaying;
+	private TextView mTvVersion;
+	
+	LayoutInflater mInflater;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		mInflater = LayoutInflater.from(QueueDisplayActivity.this);
+		
 		setContentView(R.layout.activity_queue_display);
 		final View contentView = findViewById(R.id.queue_layout);
 		surface = (SurfaceView) findViewById(R.id.surfaceView1);
@@ -146,6 +152,16 @@ public class QueueDisplayActivity extends Activity{
 		tvSumQA = (TextView) findViewById(R.id.textViewSumQA);
 		tvSumQC = (TextView) findViewById(R.id.textViewSumQC);
 		tvPlaying = (TextView) findViewById(R.id.textViewPlaying);
+		mTvVersion = (TextView) findViewById(R.id.tvVersion);
+		
+		PackageInfo pInfo;
+		try {
+			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+			mTvVersion.setText("v" + pInfo.versionName);
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		deviceCode = Secure.getString(this.getContentResolver(),
 				Secure.ANDROID_ID);
@@ -483,7 +499,6 @@ public class QueueDisplayActivity extends Activity{
 	}
 	
 	private void drawTableQueue(QueueDisplayInfo qInfo){
-		final LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
 		
 		layoutA.removeAllViews();
 		layoutB.removeAllViews();
@@ -496,17 +511,19 @@ public class QueueDisplayActivity extends Activity{
 		int i = 0;
 		for(QueueDisplayInfo.QueueInfo qData : qInfo.xListQueueInfo){
 			if(qData.getiQueueGroupID() == 1){
-				View vA = inflater.inflate(R.layout.queue_template, null);
+				View vA = mInflater.inflate(R.layout.queue_template, null);
 				TextView tvQ = (TextView) vA.findViewById(R.id.textViewQueue);
 				TextView tvSub = (TextView) vA.findViewById(R.id.tvQueueSub);
 				tvQ.setText(qData.getSzQueueName());
 				tvSub.setText(qData.getSzCustomerName());
 
-				if(i % 2 == 0){
-					vA.setBackgroundResource(android.R.color.transparent);
-				}else{
-					vA.setBackgroundResource(R.color.list_background_dark);
-				}
+//				if(i % 2 == 0){
+//					tvQ.setBackgroundResource(android.R.color.transparent);
+//					tvSub.setBackgroundResource(android.R.color.transparent);
+//				}else{
+//					tvQ.setBackgroundResource(R.color.list_background_dark);
+//					tvSub.setBackgroundResource(R.color.list_background_dark);
+//				}
 				
 				layoutA.addView(vA);
 				
@@ -514,17 +531,19 @@ public class QueueDisplayActivity extends Activity{
 			}
 			
 			if(qData.getiQueueGroupID() == 2){
-				View vB = inflater.inflate(R.layout.queue_template, null);
+				View vB = mInflater.inflate(R.layout.queue_template, null);
 				TextView tvQ = (TextView) vB.findViewById(R.id.textViewQueue);
 				TextView tvSub = (TextView) vB.findViewById(R.id.tvQueueSub);
 				tvQ.setText(qData.getSzQueueName());
 				tvSub.setText(qData.getSzCustomerName());
 
-				if(i % 2 == 0){
-					vB.setBackgroundResource(android.R.color.transparent);
-				}else{
-					vB.setBackgroundResource(R.color.list_background_dark);
-				}
+//				if(i % 2 == 0){
+//					tvQ.setBackgroundResource(android.R.color.transparent);
+//					tvSub.setBackgroundResource(android.R.color.transparent);
+//				}else{
+//					tvQ.setBackgroundResource(R.color.list_background_dark);
+//					tvSub.setBackgroundResource(R.color.list_background_dark);
+//				}
 				
 				layoutB.addView(vB);
 				
@@ -532,17 +551,19 @@ public class QueueDisplayActivity extends Activity{
 			}
 			
 			if(qData.getiQueueGroupID() == 3){
-				View vC = inflater.inflate(R.layout.queue_template, null);
+				View vC = mInflater.inflate(R.layout.queue_template, null);
 				TextView tvQ = (TextView) vC.findViewById(R.id.textViewQueue);
 				TextView tvSub = (TextView) vC.findViewById(R.id.tvQueueSub);
 				tvQ.setText(qData.getSzQueueName());
 				tvSub.setText(qData.getSzCustomerName());
 
-				if(i % 2 == 0){
-					vC.setBackgroundResource(android.R.color.transparent);
-				}else{
-					vC.setBackgroundResource(R.color.list_background_dark);
-				}
+//				if(i % 2 == 0){
+//					tvQ.setBackgroundResource(android.R.color.transparent);
+//					tvSub.setBackgroundResource(android.R.color.transparent);
+//				}else{
+//					tvQ.setBackgroundResource(R.color.list_background_dark);
+//					tvSub.setBackgroundResource(R.color.list_background_dark);
+//				}
 				
 				layoutC.addView(vC);
 				
@@ -599,8 +620,10 @@ public class QueueDisplayActivity extends Activity{
 		TextView tv;
 		Calendar c;
 		Date d;
+		Handler handler;
 		
 		public WaitingTimeTask(TextView tv, String time){
+			handler = new Handler();
 			this.tv = tv;
 			c = Calendar.getInstance(Locale.getDefault());
 
@@ -615,70 +638,83 @@ public class QueueDisplayActivity extends Activity{
 		
 		@Override
 		public void run() {
-			runOnUiThread(new Runnable() {
+			handler.post(new Runnable(){
 
 				@Override
 				public void run() {
 					try {
-						SimpleDateFormat df = new SimpleDateFormat(
-								"mm:ss");
+						SimpleDateFormat df = new SimpleDateFormat("mm:ss");
 						c.add(Calendar.SECOND, 1);
-						
+
 						tv.setText(df.format(c.getTime()));
 					} catch (Exception e) {
 						Log.d("CastDate", e.getMessage());
 						e.printStackTrace();
 					}
 				}
+				
 			});
+//			runOnUiThread(new Runnable() {
+//
+//				@Override
+//				public void run() {
+//					try {
+//						SimpleDateFormat df = new SimpleDateFormat(
+//								"mm:ss");
+//						c.add(Calendar.SECOND, 1);
+//						
+//						//tv.setText(df.format(c.getTime()));
+//					} catch (Exception e) {
+//						Log.d("CastDate", e.getMessage());
+//						e.printStackTrace();
+//					}
+//				}
+//			});
 		}
 		
 	}
 	
 	private void drawTakeAwayQueue(List<TakeAwayData> takeAwayLst){
 		takeAwayLayout.removeAllViews();
-		LayoutInflater inflater = LayoutInflater.from(QueueDisplayActivity.this);
-		Timer myTimer = null;
 		
 		int i = 0;
 		for(final TakeAwayData takeAwayData : takeAwayLst){
-			View v = inflater.inflate(R.layout.take_away_template, null);
+			View v = mInflater.inflate(R.layout.take_away_template, null);
 			TextView tvName = (TextView) v.findViewById(R.id.textViewTakeName);
-			final TextView tvWait = (TextView) v.findViewById(R.id.textViewWaitingTime);
+			TextView tvWait = (TextView) v.findViewById(R.id.textViewWaitingTime);
 			TextView tvStatus = (TextView) v.findViewById(R.id.textViewTakeStatus);
 			TextView tvNo = (TextView) v.findViewById(R.id.textViewTakeNo);
 			
 			tvNo.setText(takeAwayData.getSzQueueName());
-			tvNo.setSelected(true);
+			//tvNo.setSelected(true);
 			tvName.setText(takeAwayData.getSzTransName());
-			tvName.setSelected(true);
+			//tvName.setSelected(true);
 			tvStatus.setText(takeAwayData.getSzKdsStatusName());
-			tvStatus.setSelected(true);
-
-			myTimer = new Timer();
+			//tvStatus.setSelected(true);
+			tvWait.setText(takeAwayData.getSzStartDateTime());
+			
+			Timer myTimer = new Timer();
 			myTimer.schedule(new WaitingTimeTask(tvWait, 
 					takeAwayData.getSzStartDateTime()), 1000, 1000);
 
 			if(i % 2 == 0){
-				v.setBackgroundResource(android.R.color.transparent);
+				tvNo.setBackgroundResource(android.R.color.transparent);
+				tvName.setBackgroundResource(android.R.color.transparent);
+				tvWait.setBackgroundResource(android.R.color.transparent);
+				tvStatus.setBackgroundResource(android.R.color.transparent);
 			}else{
-				v.setBackgroundResource(R.color.list_background_dark);
+				tvNo.setBackgroundResource(R.color.sub_head);
+				tvName.setBackgroundResource(R.color.sub_head);
+				tvWait.setBackgroundResource(R.color.sub_head);
+				tvStatus.setBackgroundResource(R.color.sub_head);
 			}
-			
+
 			takeAwayLayout.addView(v);
 			
 			if(i == 5)
 				break;
 			
 			i++;
-		}
-		
-		try {
-			myTimer.cancel();
-			myTimer.purge();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 	

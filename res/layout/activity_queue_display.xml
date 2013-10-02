@@ -23,10 +23,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/background_dark"
         android:orientation="vertical" >
 
-        <LinearLayout
+        <RelativeLayout
+            android:id="@+id/RelativeLayout1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/head"
@@ -37,6 +37,8 @@
                 android:id="@+id/imageView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
                 android:scaleType="fitXY"
                 android:src="@drawable/piz_logo" />
 
@@ -44,63 +46,67 @@
                 android:id="@+id/digitalClock1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
                 android:gravity="right|center_vertical"
                 android:text="DigitalClock"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="32sp"
                 android:textStyle="bold" />
-        </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/digitalClock1"
+                android:layout_alignBottom="@+id/digitalClock1"
+                android:layout_marginRight="4dp"
+                android:layout_toLeftOf="@+id/digitalClock1"
+                android:text="ver"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@android:color/holo_orange_dark" />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/background_dark"
+            android:layout_height="wrap_content"
+            android:background="@color/list_background_dark"
+            android:baselineAligned="false"
             android:orientation="horizontal"
             android:padding="8dp" >
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginRight="2dp"
                 android:layout_weight="1"
                 android:background="@color/black_overlay"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:padding="1dp" >
 
                 <LinearLayout
                     android:id="@+id/layoutQueueTake"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1.2"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.9"
                     android:orientation="vertical" >
 
-                    <LinearLayout
-                        android:id="@+id/LinearLayout1"
-                        android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:layout_marginBottom="1dp"
-                        android:background="@color/background_dark"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingLeft="8dp"
-                        android:paddingRight="8dp" >
-
-                        <TextView
-                            android:id="@+id/tv_take_head"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Pickup Queue"
-                            android:textAppearance="?android:attr/textAppearanceLarge"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/tv_take_head"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="1dp"
-                        android:layout_marginRight="1dp" >
+                        android:layout_marginBottom="1dp"
+                        android:background="@color/sub_head"
+                        android:gravity="center"
+                        android:minWidth="210dp"
+                        android:padding="4dp"
+                        android:text="Pickup Queue"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
 
                         <TextView
                             android:id="@+id/textView1"
@@ -109,9 +115,11 @@
                             android:layout_marginBottom="1dp"
                             android:layout_marginRight="1dp"
                             android:background="@color/background_dark"
+                            android:gravity="center"
                             android:padding="4dp"
                             android:text="#"
-                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textColor="@android:color/darker_gray" />
 
                         <TextView
                             android:id="@+id/textView6"
@@ -121,9 +129,11 @@
                             android:layout_marginRight="1dp"
                             android:layout_weight="1"
                             android:background="@color/background_dark"
+                            android:gravity="center"
                             android:padding="4dp"
                             android:text="Name"
-                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textColor="@android:color/darker_gray" />
 
                         <TextView
                             android:id="@+id/textView7"
@@ -132,9 +142,11 @@
                             android:layout_marginBottom="1dp"
                             android:layout_marginRight="1dp"
                             android:background="@color/background_dark"
+                            android:gravity="center"
                             android:padding="4dp"
                             android:text="Waiting"
-                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textColor="@android:color/darker_gray" />
 
                         <TextView
                             android:id="@+id/textView8"
@@ -142,40 +154,37 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="1dp"
                             android:background="@color/background_dark"
+                            android:gravity="center"
                             android:padding="4dp"
                             android:text="Status"
-                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:textColor="@android:color/darker_gray" />
                     </LinearLayout>
 
-                    <ScrollView
-                        android:id="@+id/scroll_take_layout"
+                    <LinearLayout
+                        android:id="@+id/takeAwayLayout"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" >
-
-                        <LinearLayout
-                            android:id="@+id/takeAwayLayout"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical" >
-                        </LinearLayout>
-                    </ScrollView>
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" >
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/layoutQueue"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="1dp"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:orientation="vertical" >
 
                     <TextView
                         android:id="@+id/tv_queue_head"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="1dp"
-                        android:background="@color/background_dark"
+                        android:background="@color/sub_head"
+                        android:gravity="center"
+                        android:minWidth="210dp"
                         android:padding="4dp"
                         android:text="Table Queue"
                         android:textAppearance="?android:attr/textAppearanceLarge"
@@ -187,9 +196,8 @@
                         android:layout_height="match_parent" >
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:layout_marginLeft="1dp"
                             android:layout_marginRight="1dp"
                             android:layout_weight="1"
                             android:orientation="vertical" >
@@ -221,6 +229,7 @@
                                     android:gravity="center"
                                     android:text="A = 2"
                                     android:textAppearance="?android:attr/textAppearanceMedium"
+                                    android:textColor="@android:color/darker_gray"
                                     android:textSize="28sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
@@ -265,15 +274,14 @@
                             <LinearLayout
                                 android:id="@+id/queueALayout"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="1dp"
-                                android:layout_weight="1"
+                                android:layout_height="match_parent"
+                                android:baselineAligned="false"
                                 android:orientation="vertical" >
                             </LinearLayout>
                         </LinearLayout>
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_marginRight="1dp"
                             android:layout_weight="1"
@@ -306,6 +314,7 @@
                                     android:gravity="center"
                                     android:text="B = 4"
                                     android:textAppearance="?android:attr/textAppearanceMedium"
+                                    android:textColor="@android:color/darker_gray"
                                     android:textSize="28sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
@@ -349,18 +358,17 @@
                             <LinearLayout
                                 android:id="@+id/queueBLayout"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="1dp"
-                                android:layout_weight="1"
+                                android:layout_height="match_parent"
+                                android:baselineAligned="false"
                                 android:orientation="vertical" >
                             </LinearLayout>
                         </LinearLayout>
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:layout_marginRight="1dp"
                             android:layout_weight="1"
+                            android:baselineAligned="false"
                             android:orientation="vertical" >
 
                             <LinearLayout
@@ -390,6 +398,7 @@
                                     android:gravity="center"
                                     android:text="C > 5"
                                     android:textAppearance="?android:attr/textAppearanceMedium"
+                                    android:textColor="@android:color/darker_gray"
                                     android:textSize="28sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
@@ -434,9 +443,8 @@
                             <LinearLayout
                                 android:id="@+id/queueCLayout"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="1dp"
-                                android:layout_weight="1"
+                                android:layout_height="match_parent"
+                                android:baselineAligned="false"
                                 android:orientation="vertical" >
                             </LinearLayout>
                         </LinearLayout>
@@ -463,7 +471,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center" />
-
                 </LinearLayout>
 
                 <ImageButton
