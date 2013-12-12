@@ -1,9 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/queue_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_dark"
     android:orientation="vertical"
     tools:context=".QueueDisplayActivity" >
 
@@ -71,18 +69,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/list_background_dark"
             android:baselineAligned="false"
-            android:orientation="horizontal"
-            android:padding="8dp" >
+            android:orientation="horizontal" >
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@color/black_overlay"
-                android:orientation="vertical"
-                android:padding="1dp" >
+                android:orientation="vertical" >
 
                 <LinearLayout
                     android:id="@+id/layoutQueueTake"
@@ -96,11 +90,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="1dp"
-                        android:background="@color/sub_head"
-                        android:gravity="center"
-                        android:minWidth="210dp"
                         android:padding="4dp"
-                        android:text="Pickup Queue"
+                        android:text="@string/pickup_queue"
                         android:textAppearance="?android:attr/textAppearanceLarge"
                         android:textStyle="bold" />
 
@@ -110,55 +101,51 @@
 
                         <TextView
                             android:id="@+id/textView1"
-                            android:layout_width="120dp"
+                            style="@style/ColumnHeader"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="1dp"
                             android:layout_marginRight="1dp"
-                            android:background="@color/background_dark"
+                            android:layout_weight="0.2"
                             android:gravity="center"
-                            android:padding="4dp"
-                            android:text="#"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textColor="@android:color/darker_gray" />
+                            android:text="@string/col_no"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
 
                         <TextView
                             android:id="@+id/textView6"
+                            style="@style/ColumnHeader"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="1dp"
                             android:layout_marginRight="1dp"
                             android:layout_weight="1"
-                            android:background="@color/background_dark"
                             android:gravity="center"
-                            android:padding="4dp"
-                            android:text="Name"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textColor="@android:color/darker_gray" />
+                            android:text="@string/name"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
 
                         <TextView
                             android:id="@+id/textView7"
-                            android:layout_width="120dp"
+                            style="@style/ColumnHeader"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="1dp"
                             android:layout_marginRight="1dp"
-                            android:background="@color/background_dark"
+                            android:layout_weight="1"
                             android:gravity="center"
-                            android:padding="4dp"
-                            android:text="Waiting"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textColor="@android:color/darker_gray" />
+                            android:text="@string/wait"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
 
                         <TextView
                             android:id="@+id/textView8"
-                            android:layout_width="130dp"
+                            style="@style/ColumnHeader"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="1dp"
-                            android:background="@color/background_dark"
+                            android:layout_weight="1"
                             android:gravity="center"
-                            android:padding="4dp"
-                            android:text="Status"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textColor="@android:color/darker_gray" />
+                            android:text="@string/status"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+
                     </LinearLayout>
 
                     <LinearLayout
@@ -182,16 +169,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="1dp"
-                        android:background="@color/sub_head"
-                        android:gravity="center"
-                        android:minWidth="210dp"
                         android:padding="4dp"
-                        android:text="Table Queue"
+                        android:text="@string/table_queue"
                         android:textAppearance="?android:attr/textAppearanceLarge"
                         android:textStyle="bold" />
 
                     <LinearLayout
-                        android:id="@id/queue_layout"
+                        android:id="@+id/queue_layout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" >
 
@@ -212,7 +196,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginRight="1dp"
-                                    android:background="@color/background_dark"
                                     android:gravity="center"
                                     android:minWidth="48dp"
                                     android:text="0"
@@ -225,7 +208,6 @@
                                     android:id="@+id/textView2"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:background="@color/background_dark"
                                     android:gravity="center"
                                     android:text="A = 2"
                                     android:textAppearance="?android:attr/textAppearanceMedium"
@@ -238,9 +220,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="1dp"
-                                android:background="@color/sub_head"
-                                android:orientation="vertical"
-                                android:padding="4dp" >
+                                android:orientation="vertical" >
 
                                 <TextView
                                     android:id="@+id/textViewCallA"
@@ -297,7 +277,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginRight="1dp"
-                                    android:background="@color/background_dark"
                                     android:gravity="center"
                                     android:minWidth="48dp"
                                     android:text="0"
@@ -310,7 +289,6 @@
                                     android:id="@+id/textView3"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:background="@color/background_dark"
                                     android:gravity="center"
                                     android:text="B = 4"
                                     android:textAppearance="?android:attr/textAppearanceMedium"
@@ -323,9 +301,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="1dp"
-                                android:background="@color/sub_head"
-                                android:orientation="vertical"
-                                android:padding="4dp" >
+                                android:orientation="vertical" >
 
                                 <TextView
                                     android:id="@+id/textViewCallB"
@@ -381,7 +357,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginRight="1dp"
-                                    android:background="@color/background_dark"
                                     android:gravity="center"
                                     android:minWidth="48dp"
                                     android:text="0"
@@ -394,7 +369,6 @@
                                     android:id="@+id/textView4"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:background="@color/background_dark"
                                     android:gravity="center"
                                     android:text="C > 5"
                                     android:textAppearance="?android:attr/textAppearanceMedium"
@@ -407,9 +381,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="1dp"
-                                android:background="@color/sub_head"
-                                android:orientation="vertical"
-                                android:padding="4dp" >
+                                android:orientation="vertical" >
 
                                 <TextView
                                     android:id="@+id/textViewCallC"
@@ -457,8 +429,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:gravity="center"
-                android:paddingLeft="8dp" >
+                android:gravity="center" >
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -523,7 +494,6 @@
     <WebView
         android:id="@+id/webView1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/background_dark" />
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

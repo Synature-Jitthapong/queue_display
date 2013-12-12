@@ -13,5 +13,11 @@
     <string name="add">Add</string>
     <string name="information_text">Information text</string>
     <string name="port">Port</string>
+    <string name="col_no">#</string>
+    <string name="name">Name</string>
+    <string name="wait">Wait</string>
+    <string name="status">Status</string>
+    <string name="pickup_queue">Pickup Queue</string>
+    <string name="table_queue">Table Queue</string>
 
 </resources>
