@@ -15,10 +15,27 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
+        <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@color/background_dark</item>
     </style>
+    <style name="FullscreenActionBarStyle" parent="android:Widget.Holo.ActionBar">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+    
     <style name="ColumnHeader" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/header_column</item>
         <item name="android:layout_marginRight">1dp</item>
         <item name="android:layout_marginBottom">1dp</item>
-       <item name="android:padding">4dp</item>
+       	<item name="android:padding">4dp</item>
+    </style>
+    <style name="ColumnDetail" parent="ColumnHeader">
+        <item name="android:background">@drawable/detail_column</item>
+    </style>
+    <style name="SubHead" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/sub_head</item>
+        <item name="android:layout_marginRight">1dp</item>
+        <item name="android:layout_marginBottom">1dp</item>
+       	<item name="android:padding">4dp</item>
     </style>
 </resources>

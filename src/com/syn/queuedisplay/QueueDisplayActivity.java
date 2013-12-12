@@ -99,7 +99,7 @@ public class QueueDisplayActivity extends Activity{
 	private boolean isPause = false;
 	
 	private QueueDisplayData config;
-	private ISocketConnection socketConn;
+	//private ISocketConnection socketConn;
 	private QueueData queueData;
 	private List<QueueData.MarqueeText> marqueeLst;
 	private MarqueeAdapter marqueeAdapter;
@@ -133,7 +133,7 @@ public class QueueDisplayActivity extends Activity{
 		mInflater = LayoutInflater.from(QueueDisplayActivity.this);
 		
 		setContentView(R.layout.activity_queue_display);
-		final View contentView = findViewById(R.id.queue_layout);
+		final View contentView = findViewById(R.id.MainLayout);
 		surface = (SurfaceView) findViewById(R.id.surfaceView1);
 		mWebView = (WebView) findViewById(R.id.webView1);
 		takeAwayLayout = (LinearLayout) findViewById(R.id.takeAwayLayout);
@@ -175,7 +175,8 @@ public class QueueDisplayActivity extends Activity{
 
 							@Override
 							public void onError(Exception e) {
-								
+								myMediaPlayer.releaseMediaPlayer();
+								myMediaPlayer.resume();
 							}
 
 							@Override
@@ -381,7 +382,7 @@ public class QueueDisplayActivity extends Activity{
 		d.setContentView(v);
 		d.setTitle(R.string.title_activity_setting);
 		d.getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 		d.show();
 		
 		btnCancel.setOnClickListener(new OnClickListener(){
@@ -507,8 +508,7 @@ public class QueueDisplayActivity extends Activity{
 		int totalQa = 0;
 		int totalQb = 0;
 		int totalQc = 0;
-
-		int i = 0;
+		
 		for(QueueDisplayInfo.QueueInfo qData : qInfo.xListQueueInfo){
 			if(qData.getiQueueGroupID() == 1){
 				View vA = mInflater.inflate(R.layout.queue_template, null);
@@ -516,15 +516,6 @@ public class QueueDisplayActivity extends Activity{
 				TextView tvSub = (TextView) vA.findViewById(R.id.tvQueueSub);
 				tvQ.setText(qData.getSzQueueName());
 				tvSub.setText(qData.getSzCustomerName());
-
-//				if(i % 2 == 0){
-//					tvQ.setBackgroundResource(android.R.color.transparent);
-//					tvSub.setBackgroundResource(android.R.color.transparent);
-//				}else{
-//					tvQ.setBackgroundResource(R.color.list_background_dark);
-//					tvSub.setBackgroundResource(R.color.list_background_dark);
-//				}
-				
 				layoutA.addView(vA);
 				
 				totalQa++;
@@ -536,15 +527,6 @@ public class QueueDisplayActivity extends Activity{
 				TextView tvSub = (TextView) vB.findViewById(R.id.tvQueueSub);
 				tvQ.setText(qData.getSzQueueName());
 				tvSub.setText(qData.getSzCustomerName());
-
-//				if(i % 2 == 0){
-//					tvQ.setBackgroundResource(android.R.color.transparent);
-//					tvSub.setBackgroundResource(android.R.color.transparent);
-//				}else{
-//					tvQ.setBackgroundResource(R.color.list_background_dark);
-//					tvSub.setBackgroundResource(R.color.list_background_dark);
-//				}
-				
 				layoutB.addView(vB);
 				
 				totalQb++;
@@ -556,21 +538,10 @@ public class QueueDisplayActivity extends Activity{
 				TextView tvSub = (TextView) vC.findViewById(R.id.tvQueueSub);
 				tvQ.setText(qData.getSzQueueName());
 				tvSub.setText(qData.getSzCustomerName());
-
-//				if(i % 2 == 0){
-//					tvQ.setBackgroundResource(android.R.color.transparent);
-//					tvSub.setBackgroundResource(android.R.color.transparent);
-//				}else{
-//					tvQ.setBackgroundResource(R.color.list_background_dark);
-//					tvSub.setBackgroundResource(R.color.list_background_dark);
-//				}
-				
 				layoutC.addView(vC);
 				
 				totalQc++;
 			}
-			
-			i++;
 		}
 		
 		tvSumQA.setText(Integer.toString(totalQa));
@@ -615,38 +586,39 @@ public class QueueDisplayActivity extends Activity{
 		}).execute(serviceUrl);
 	}
 	
-	private final class WaitingTimeTask extends TimerTask {
+	private static final class WaitingTimeTask extends TimerTask {
 
-		private TextView tv;
-		private Calendar c;
-		private Date d;
-		private Handler myHandler;
+		private static TextView sTextView;
+		private static Calendar sCalendar;
+		private static Date sDate;
+		private static Handler sHandler;
 		
-		public WaitingTimeTask(TextView textView, String time) {
-			myHandler = new Handler();
-			this.tv = textView;
-			c = Calendar.getInstance(Locale.getDefault());
+		public static WaitingTimeTask newInstance(TextView textView, String time){
+			sHandler = new Handler();
+			sTextView = textView;
+			sCalendar = Calendar.getInstance(Locale.getDefault());
 
 			try {
-				d = new SimpleDateFormat("mm:ss").parse(time);
-				c.setTime(d);
+				sDate = new SimpleDateFormat("mm:ss").parse(time);
+				sCalendar.setTime(sDate);
 			} catch (ParseException e1) {
-				c.setTime(new Date());
+				sCalendar.setTime(new Date());
 				e1.printStackTrace();
 			}
+			return new WaitingTimeTask();
 		}
 
 		@Override
 		public void run() {
-			myHandler.post(new Runnable(){
+			sHandler.post(new Runnable(){
 
 				@Override
 				public void run() {
 					try {
 						SimpleDateFormat df = new SimpleDateFormat("mm:ss");
-						c.add(Calendar.SECOND, 1);
+						sCalendar.add(Calendar.SECOND, 1);
 
-						tv.setText(df.format(c.getTime()));
+						sTextView.setText(df.format(sCalendar.getTime()));
 					} catch (Exception e) {
 						Log.d("CastDate", e.getMessage());
 						e.printStackTrace();
@@ -660,10 +632,8 @@ public class QueueDisplayActivity extends Activity{
 	
 	private void drawTakeAwayQueue(List<TakeAwayData> takeAwayLst){
 		takeAwayLayout.removeAllViews();
-		
 		Timer myTimer = new Timer();
-
-		int i = 0;
+		
 		for(final TakeAwayData takeAwayData : takeAwayLst){
 			View v = mInflater.inflate(R.layout.take_away_template, null);
 			TextView tvName = (TextView) v.findViewById(R.id.textViewTakeName);
@@ -679,29 +649,15 @@ public class QueueDisplayActivity extends Activity{
 			//tvStatus.setSelected(true);
 			tvWait.setText(takeAwayData.getSzStartDateTime());
 			
-			myTimer.schedule(new WaitingTimeTask(tvWait, 
+			myTimer.schedule(WaitingTimeTask.newInstance(tvWait, 
 					takeAwayData.getSzStartDateTime()), 1000, 1000);
 
-			if(i % 2 == 0){
-				tvNo.setBackgroundResource(android.R.color.transparent);
-				tvName.setBackgroundResource(android.R.color.transparent);
-				tvWait.setBackgroundResource(android.R.color.transparent);
-				tvStatus.setBackgroundResource(android.R.color.transparent);
-			}else{
-				tvNo.setBackgroundResource(R.color.sub_head);
-				tvName.setBackgroundResource(R.color.sub_head);
-				tvWait.setBackgroundResource(R.color.sub_head);
-				tvStatus.setBackgroundResource(R.color.sub_head);
-			}
-
 			takeAwayLayout.addView(v);
-			
-			i++;
 		}
 	}
 	
 	private void createTakeAwayFromService(){
-		Log.i("take away queue", "call takeaway queue " + queueData.getUpdateInterval());
+		//Log.i("take away queue", "call takeaway queue " + queueData.getUpdateInterval());
 		new QueueTakeAwayService(QueueDisplayActivity.this, queueData.getShopId(), deviceCode, 
 				new QueueTakeAwayService.Callback() {
 			
