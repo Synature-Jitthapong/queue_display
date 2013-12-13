@@ -3,6 +3,7 @@ package com.syn.queuedisplay;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -95,11 +96,16 @@ public class QueueDisplayActivity extends Activity{
 	private boolean isQueueRun = false;
 	private Handler handlerQueue;
 	private Handler handlerTake;
+	private Handler mHandlerWaitTake;
 	private MyMediaPlayer myMediaPlayer;
 	private boolean isPause = false;
 	
 	private QueueDisplayData config;
 	//private ISocketConnection socketConn;
+	
+	private List<TakeAwayData> mTakeAwayLst;
+	private TakeAwayQueueAdapter mTakeAwayAdapter;
+	
 	private QueueData queueData;
 	private List<QueueData.MarqueeText> marqueeLst;
 	private MarqueeAdapter marqueeAdapter;
@@ -107,7 +113,7 @@ public class QueueDisplayActivity extends Activity{
 	
 	private WebView mWebView;
 	private LinearLayout queueTakeLayout;
-	private LinearLayout takeAwayLayout;
+	private ListView mLvTakeAway;
 	private LinearLayout queueLayout;
 	private LinearLayout layoutA;
 	private LinearLayout layoutB;
@@ -133,10 +139,10 @@ public class QueueDisplayActivity extends Activity{
 		mInflater = LayoutInflater.from(QueueDisplayActivity.this);
 		
 		setContentView(R.layout.activity_queue_display);
-		final View contentView = findViewById(R.id.MainLayout);
+		final View contentView = findViewById(R.id.headerLayout);
 		surface = (SurfaceView) findViewById(R.id.surfaceView1);
 		mWebView = (WebView) findViewById(R.id.webView1);
-		takeAwayLayout = (LinearLayout) findViewById(R.id.takeAwayLayout);
+		mLvTakeAway = (ListView) findViewById(R.id.lvTakeAway);
 		queueTakeLayout = (LinearLayout) findViewById(R.id.layoutQueueTake);
 		queueLayout = (LinearLayout) findViewById(R.id.layoutQueue);
 		layoutA = (LinearLayout) findViewById(R.id.queueALayout);
@@ -175,8 +181,13 @@ public class QueueDisplayActivity extends Activity{
 
 							@Override
 							public void onError(Exception e) {
-								myMediaPlayer.releaseMediaPlayer();
-								myMediaPlayer.resume();
+								try {
+									myMediaPlayer.releaseMediaPlayer();
+									myMediaPlayer.startPlayMedia();
+								} catch (Exception e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
 							}
 
 							@Override
@@ -197,10 +208,13 @@ public class QueueDisplayActivity extends Activity{
 		}else{
 			queueLayout.setVisibility(View.GONE);
 		}
+		
 		if(queueData.isEnableTake()){
 			queueTakeLayout.setVisibility(View.VISIBLE);
 			handlerTake = new Handler();
 			handlerTake.post(updateQueueTake);
+			mHandlerWaitTake = new Handler();
+			mWaitTimeThread.start();
 			isTakeRun = true;
 		}else{
 			queueTakeLayout.setVisibility(View.GONE);
@@ -246,7 +260,6 @@ public class QueueDisplayActivity extends Activity{
 		delayedHide(100);
 	}
 
-	// thread update queue
 	private Runnable updateQueue = new Runnable() {
 
 		@Override
@@ -263,8 +276,33 @@ public class QueueDisplayActivity extends Activity{
 		}
 
 	};
+
+	private final Thread mWaitTimeThread = new Thread(new Runnable(){
+
+		@Override
+		public void run() {
+			Calendar calendar = Calendar.getInstance();
+			SimpleDateFormat df = new SimpleDateFormat("mm:ss");
+			if (mTakeAwayLst != null) {
+				for (TakeAwayData takeData : mTakeAwayLst) {
+					try {
+						Date d = df.parse(takeData.getSzStartDateTime());
+						calendar.setTime(d);
+						calendar.add(Calendar.SECOND, 1);
+						takeData.setSzStartDateTime(df.format(calendar
+								.getTime()));
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				mTakeAwayAdapter.notifyDataSetChanged();
+			}
+			mHandlerWaitTake.postDelayed(this, 1000);
+		}
+		
+	});
 	
-	// thread update queue take
 	private Runnable updateQueueTake = new Runnable() {
 
 		@Override
@@ -296,18 +334,23 @@ public class QueueDisplayActivity extends Activity{
 	}
 	
 	private void createMarqueeText(){
-		StringBuilder strHtml = new StringBuilder();
-		StringBuilder strInfoText = new StringBuilder();
-		for(QueueData.MarqueeText marquee : marqueeLst){
-			strInfoText.append(marquee.getTextVal());
-			for(int i = 0; i< 10; i ++){
-				strInfoText.append("\t");
+		if (marqueeLst.size() > 0) {
+			StringBuilder strHtml = new StringBuilder();
+			StringBuilder strInfoText = new StringBuilder();
+			for (QueueData.MarqueeText marquee : marqueeLst) {
+				strInfoText.append(marquee.getTextVal());
+				for (int i = 0; i < 10; i++) {
+					strInfoText.append("\t");
+				}
 			}
+			strHtml.append("<html><body style=\"background:#000;\"><FONT COLOR=\"#FFF\"><marquee direction=\"Left\" style=\"width: auto;\" >");
+			strHtml.append(strInfoText);
+			strHtml.append("</marquee></FONT></body></html>");
+			mWebView.setVisibility(View.VISIBLE);
+			mWebView.loadData(strHtml.toString(), "text/html", "UTF-8");
+		} else {
+			mWebView.setVisibility(View.GONE);
 		}
-		strHtml.append("<html><body style=\"background:#000;\"><FONT COLOR=\"#FFF\"><marquee direction=\"Left\" style=\"width: auto;\" >");
-		strHtml.append(strInfoText);
-		strHtml.append("</marquee></FONT></body></html>");
-		mWebView.loadDataWithBaseURL(null, strHtml.toString(), "text/html", "UTF-8", null);
 	}
 	
 	private void popupSetting(){
@@ -567,7 +610,7 @@ public class QueueDisplayActivity extends Activity{
 			public void onSuccess(QueueDisplayInfo qInfo) {
 //				JSONUtil jsonUtil = new JSONUtil();
 //				Type type = new TypeToken<QueueDisplayInfo>() {}.getType();
-//				String result = "{\"xListQueueInfo\":[{\"iQueueID\":8,\"iQueueIndex\":3,\"iQueueGroupID\":1,\"szQueueName\":\"A3\",\"szCustomerName\":\"testing\",\"iCustomerQty\":3,\"szStartQueueDate\":\"2013-09-24 15:01:29\",\"iWaitQueueMinTime\":23,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":7,\"iQueueIndex\":1,\"iQueueGroupID\":2,\"szQueueName\":\"B1\",\"szCustomerName\":\"testing\",\"iCustomerQty\":3,\"szStartQueueDate\":\"2013-09-24 14:19:45\",\"iWaitQueueMinTime\":65,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":5,\"iQueueIndex\":1,\"iQueueGroupID\":3,\"szQueueName\":\"C1\",\"szCustomerName\":\"jjjj\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 13:50:48\",\"iWaitQueueMinTime\":94,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":6,\"iQueueIndex\":2,\"iQueueGroupID\":3,\"szQueueName\":\"C2\",\"szCustomerName\":\"kkk\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 14:12:30\",\"iWaitQueueMinTime\":72,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0}],\"szCurQueueGroupA\":\"A1\",\"szCurQueueCustomerA\":\"Customer name a\",\"szCurQueueGroupB\":\"B1\",\"szCurQueueCustomerB\":\"Customer name b\",\"szCurQueueGroupC\":\"C1\",\"szCurQueueCustomerC\":\"Customer name c\"}";
+//				String result = "{\"xListQueueInfo\":[{\"iQueueID\":8,\"iQueueIndex\":3,\"iQueueGroupID\":1,\"szQueueName\":\"A3\",\"szCustomerName\":\"testing\",\"iCustomerQty\":3,\"szStartQueueDate\":\"2013-09-24 15:01:29\",\"iWaitQueueMinTime\":23,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":7,\"iQueueIndex\":1,\"iQueueGroupID\":2,\"szQueueName\":\"B1\",\"szCustomerName\":\"testing\",\"iCustomerQty\":3,\"szStartQueueDate\":\"2013-09-24 14:19:45\",\"iWaitQueueMinTime\":65,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":5,\"iQueueIndex\":1,\"iQueueGroupID\":3,\"szQueueName\":\"C1\",\"szCustomerName\":\"jjjj\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 13:50:48\",\"iWaitQueueMinTime\":94,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":6,\"iQueueIndex\":2,\"iQueueGroupID\":3,\"szQueueName\":\"C2\",\"szCustomerName\":\"kkk\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 14:12:30\",\"iWaitQueueMinTime\":72,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":6,\"iQueueIndex\":2,\"iQueueGroupID\":3,\"szQueueName\":\"C2\",\"szCustomerName\":\"kkk\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 14:12:30\",\"iWaitQueueMinTime\":72,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0}],\"szCurQueueGroupA\":\"A1\",\"szCurQueueCustomerA\":\"Customer name a\",\"szCurQueueGroupB\":\"B1\",\"szCurQueueCustomerB\":\"Customer name b\",\"szCurQueueGroupC\":\"C1\",\"szCurQueueCustomerC\":\"Customer name c\"}";
 //				
 //				qInfo = (QueueDisplayInfo) jsonUtil.toObject(type, result);
 
@@ -586,84 +629,22 @@ public class QueueDisplayActivity extends Activity{
 		}).execute(serviceUrl);
 	}
 	
-	private static final class WaitingTimeTask extends TimerTask {
-
-		private static TextView sTextView;
-		private static Calendar sCalendar;
-		private static Date sDate;
-		private static Handler sHandler;
-		
-		public static WaitingTimeTask newInstance(TextView textView, String time){
-			sHandler = new Handler();
-			sTextView = textView;
-			sCalendar = Calendar.getInstance(Locale.getDefault());
-
-			try {
-				sDate = new SimpleDateFormat("mm:ss").parse(time);
-				sCalendar.setTime(sDate);
-			} catch (ParseException e1) {
-				sCalendar.setTime(new Date());
-				e1.printStackTrace();
-			}
-			return new WaitingTimeTask();
-		}
-
-		@Override
-		public void run() {
-			sHandler.post(new Runnable(){
-
-				@Override
-				public void run() {
-					try {
-						SimpleDateFormat df = new SimpleDateFormat("mm:ss");
-						sCalendar.add(Calendar.SECOND, 1);
-
-						sTextView.setText(df.format(sCalendar.getTime()));
-					} catch (Exception e) {
-						Log.d("CastDate", e.getMessage());
-						e.printStackTrace();
-					}
-				}
-				
-			});
-		}
-
-	}
-	
-	private void drawTakeAwayQueue(List<TakeAwayData> takeAwayLst){
-		takeAwayLayout.removeAllViews();
-		Timer myTimer = new Timer();
-		
-		for(final TakeAwayData takeAwayData : takeAwayLst){
-			View v = mInflater.inflate(R.layout.take_away_template, null);
-			TextView tvName = (TextView) v.findViewById(R.id.textViewTakeName);
-			TextView tvWait = (TextView) v.findViewById(R.id.textViewWaitingTime);
-			TextView tvStatus = (TextView) v.findViewById(R.id.textViewTakeStatus);
-			TextView tvNo = (TextView) v.findViewById(R.id.textViewTakeNo);
-			
-			tvNo.setText(takeAwayData.getSzQueueName());
-			//tvNo.setSelected(true);
-			tvName.setText(takeAwayData.getSzTransName());
-			//tvName.setSelected(true);
-			tvStatus.setText(takeAwayData.getSzKdsStatusName());
-			//tvStatus.setSelected(true);
-			tvWait.setText(takeAwayData.getSzStartDateTime());
-			
-			myTimer.schedule(WaitingTimeTask.newInstance(tvWait, 
-					takeAwayData.getSzStartDateTime()), 1000, 1000);
-
-			takeAwayLayout.addView(v);
-		}
-	}
-	
 	private void createTakeAwayFromService(){
-		//Log.i("take away queue", "call takeaway queue " + queueData.getUpdateInterval());
+//		String result = "[{\"szTransName\":\"Ibu Dina : 08765667777 xxxxxxyyyyyyyyyyyyyyzzzzzzzzzzzzzAAAAAAAA\",\"szQueueName\":\"(TA) : 24\",\"iKdsStatusID\":2,\"szKdsStatusName\":\"Pickup\",\"szStartDateTime\":\"44:47\",\"szFinishDateTime\":\"13-12-2556 10:15:15\"},{\"szTransName\":\"Bapak Jamhuri : 0976543678\",\"szQueueName\":\"(TA) : 30\",\"iKdsStatusID\":0,\"szKdsStatusName\":\"Waiting\",\"szStartDateTime\":\"08:07\",\"szFinishDateTime\":\"\"},{\"szTransName\":\"Ibu Susan : 098456787\",\"szQueueName\":\"(TA) : 32\",\"iKdsStatusID\":2,\"szKdsStatusName\":\"Pickup\",\"szStartDateTime\":\"56:16\",\"szFinishDateTime\":\"13-12-2556 10:15:15\"},{\"szTransName\":\"Ibu Ina : 09856789\",\"szQueueName\":\"(TA) : 36\",\"iKdsStatusID\":2,\"szKdsStatusName\":\"Pickup\",\"szStartDateTime\":\"46:47\",\"szFinishDateTime\":\"13-12-2556 10:15:15\"},{\"szTransName\":\"Bapak Koon : 0876890000\",\"szQueueName\":\"(TA) : 37\",\"iKdsStatusID\":2,\"szKdsStatusName\":\"Pickup\",\"szStartDateTime\":\"43:14\",\"szFinishDateTime\":\"13-12-2556 10:15:15\"},{\"szTransName\":\"Ibu Dina : 67899000\",\"szQueueName\":\"(TA) : 38\",\"iKdsStatusID\":2,\"szKdsStatusName\":\"Pickup\",\"szStartDateTime\":\"40:47\",\"szFinishDateTime\":\"13-12-2556 10:15:15\"},{\"szTransName\":\"1 : 4\",\"szQueueName\":\"(TA) : 39\",\"iKdsStatusID\":2,\"szKdsStatusName\":\"Pickup\",\"szStartDateTime\":\"59:01\",\"szFinishDateTime\":\"13-12-2556 10:15:15\"}]";
+//		JSONUtil jsonUtil = new JSONUtil();
+//		Type type = new TypeToken<List<TakeAwayData>>() {}.getType();
+//		mTakeAwayLst = (List<TakeAwayData>) jsonUtil.toObject(type, result);
+//		mTakeAwayAdapter = new TakeAwayQueueAdapter(this, mTakeAwayLst);
+//		mLvTakeAway.setAdapter(mTakeAwayAdapter);
+		
 		new QueueTakeAwayService(QueueDisplayActivity.this, queueData.getShopId(), deviceCode, 
 				new QueueTakeAwayService.Callback() {
 			
 			@Override
 			public void onSuccess(List<TakeAwayData> takeAwayLst) {
-				drawTakeAwayQueue(takeAwayLst);
+				mTakeAwayLst = takeAwayLst;
+				mTakeAwayAdapter = new TakeAwayQueueAdapter(QueueDisplayActivity.this, mTakeAwayLst);
+				mLvTakeAway.setAdapter(mTakeAwayAdapter);
 			}
 			
 			@Override
@@ -675,28 +656,44 @@ public class QueueDisplayActivity extends Activity{
 			public void onError(String msg) {
 
 			}
-		}).execute(serviceUrl);
-		
+		}).execute(serviceUrl);		
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		try {
+			myMediaPlayer.resume();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	protected void onPause() {
-		isTakeRun = false;
-		isQueueRun = false;
-		handlerTake.removeCallbacks(updateQueueTake);
-		handlerQueue.removeCallbacks(updateQueue);
-		myMediaPlayer.releaseMediaPlayer();
 		super.onPause();
+		try {
+			myMediaPlayer.pause();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	protected void onDestroy() {
-		isTakeRun = false;
-		isQueueRun = false;
-		handlerTake.removeCallbacks(updateQueueTake);
-		handlerQueue.removeCallbacks(updateQueue);
-		myMediaPlayer.releaseMediaPlayer();
 		super.onDestroy();
+		try {
+			isTakeRun = false;
+			isQueueRun = false;
+			handlerTake.removeCallbacks(updateQueueTake);
+			handlerQueue.removeCallbacks(updateQueue);
+			myMediaPlayer.releaseMediaPlayer();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void videoBackClicked(final View v){
