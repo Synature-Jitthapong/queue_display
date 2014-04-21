@@ -11,4 +11,29 @@
         <attr name="buttonBarButtonStyle" format="reference" />
     </declare-styleable>
 
+    <string-array name="pref_refresh_name">
+        <item>1min.</item>
+        <item>3min.</item>
+        <item>5min.</item>
+        <item>10min.</item>
+    </string-array>
+    <string-array name="pref_refresh_value">
+        <item>60000</item>
+        <item>180000</item>
+        <item>300000</item>
+        <item>6000000</item>
+    </string-array>
+    <string-array name="pref_column_name">
+        <item>1 (A)</item>
+        <item>2 (A, B)</item>
+        <item>3 (A, B, C)</item>
+        <item>4 (A, B, C, D)</item>
+    </string-array>
+    <string-array name="pref_column_value">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
 </resources>
