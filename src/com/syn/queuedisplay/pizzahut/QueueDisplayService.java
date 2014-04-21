@@ -9,9 +9,11 @@ import com.syn.pos.QueueDisplayInfo;
 import android.content.Context;
 
 public class QueueDisplayService extends QueueDisplayMainService {
+	
 	private Callback callback;
-	public QueueDisplayService(Context c, int shopId, String deviceCode, Callback listener) {
-		super(c, shopId, deviceCode, "WSiQueue_JSON_GetCurrentAllQueueDisplay");
+	
+	public QueueDisplayService(Context c, Callback listener) {
+		super(c,  "WSiQueue_JSON_GetCurrentAllQueueDisplay");
 		
 		callback = listener;
 	}

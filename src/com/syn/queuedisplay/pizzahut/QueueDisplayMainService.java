@@ -5,18 +5,22 @@ import android.content.Context;
 import com.j1tth4.mobile.util.DotNetWebServiceTask;
 
 public class QueueDisplayMainService extends DotNetWebServiceTask {
-	public QueueDisplayMainService(Context c, int shopId, String deviceCode, String method) {
+	public static final String PARAM_SHOP_ID = "iShopID";
+	public static final String PARAM_DEVICE_CODE = "szDeviceCode";
+	public static final String GET_CURR_ALL_QUEUE_METHOD = "WSiQueue_JSON_GetCurrentAllQueueDisplay";
+	
+	public QueueDisplayMainService(Context c, String method) {
 		super(c, method);
 		
 		mProperty = new PropertyInfo();
-		mProperty.setName("iShopID");
-		mProperty.setValue(shopId);
+		mProperty.setName(PARAM_SHOP_ID);
+		mProperty.setValue(QueueApplication.getShopId());
 		mProperty.setType(int.class);
 		mSoapRequest.addProperty(mProperty);
 		
 		mProperty = new PropertyInfo();
-		mProperty.setName("szDeviceCode");
-		mProperty.setValue(deviceCode);
+		mProperty.setName(PARAM_DEVICE_CODE);
+		mProperty.setValue(QueueApplication.getDeviceCode());
 		mProperty.setType(String.class);
 		mSoapRequest.addProperty(mProperty);
 	}

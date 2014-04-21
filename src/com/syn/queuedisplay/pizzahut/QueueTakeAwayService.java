@@ -10,10 +10,11 @@ import com.syn.pos.WebServiceResult;
 import android.content.Context;
 
 public class QueueTakeAwayService extends QueueDisplayMainService {
+	
 	private Callback callback;
 	
-	public QueueTakeAwayService(Context c, int shopId, String deviceCode, Callback listener) {
-		super(c, shopId, deviceCode, "WSiKDS_JSON_GetTakeAwayDisplayData");
+	public QueueTakeAwayService(Context c, Callback listener) {
+		super(c, "WSiKDS_JSON_GetTakeAwayDisplayData");
 		
 		callback = listener;
 	}
