@@ -63,8 +63,8 @@ import android.widget.TextView;
  * 
  * @see SystemUiHider
  */
-public class QueueDisplayActivity extends Activity  implements Runnable, QueueServerSocket.ServerSocketListener,
-SpeakCallingQueue.OnPlaySoundListener, VideoPlayer.MediaPlayerStateListener{
+public class QueueDisplayActivity extends Activity  implements 
+	QueueServerSocket.ServerSocketListener, VideoPlayer.MediaPlayerStateListener{
 	/**
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -92,25 +92,27 @@ SpeakCallingQueue.OnPlaySoundListener, VideoPlayer.MediaPlayerStateListener{
 	 * The instance of the {@link SystemUiHider} for this activity.
 	 */
 	private SystemUiHider mSystemUiHider;
+	
+	private VideoPlayer mVideoPlayer;
+	
 	private String deviceCode = "";
 	private String serviceUrl = "";
+	
 	private boolean isTakeRun = false;
 	private boolean isQueueRun = false;
+	private boolean isPause = false;
+	
 	private Handler handlerQueue;
 	private Handler handlerTake;
 	private Handler mHandlerWaitTake;
-	private boolean isPause = false;
 	
 	private QueueDisplayData config;
-	//private ISocketConnection socketConn;
-	
 	private List<TakeAwayData> mTakeAwayLst;
 	private TakeAwayQueueAdapter mTakeAwayAdapter;
 	
 	private QueueData queueData;
 	private List<QueueData.MarqueeText> marqueeLst;
-	private MarqueeAdapter marqueeAdapter;
-	private SurfaceView surface;
+	private SurfaceView mSerface;
 	
 	private WebView mWebView;
 	private LinearLayout queueTakeLayout;
@@ -141,7 +143,7 @@ SpeakCallingQueue.OnPlaySoundListener, VideoPlayer.MediaPlayerStateListener{
 		
 		setContentView(R.layout.activity_queue_display);
 		final View contentView = findViewById(R.id.headerLayout);
-		surface = (SurfaceView) findViewById(R.id.surfaceView1);
+		mSerface = (SurfaceView) findViewById(R.id.surfaceView1);
 		mWebView = (WebView) findViewById(R.id.webView1);
 		mLvTakeAway = (ListView) findViewById(R.id.lvTakeAway);
 		queueTakeLayout = (LinearLayout) findViewById(R.id.layoutQueueTake);
@@ -225,6 +227,10 @@ SpeakCallingQueue.OnPlaySoundListener, VideoPlayer.MediaPlayerStateListener{
 				}
 			}
 		});
+		
+		// init media player
+		mVideoPlayer = new VideoPlayer(this, mSurface, 
+				QueueApplication.getVDODir(), this);
 	}
 
 	@Override
@@ -690,5 +696,33 @@ SpeakCallingQueue.OnPlaySoundListener, VideoPlayer.MediaPlayerStateListener{
 			TextView tvText;
 			ImageButton btnDel;
 		}
+	}
+
+	@Override
+	public void onPlayedFileName(String fileName) {
+		mTvPlaying.setText(fileName);
+	}
+
+	@Override
+	public void onError(Exception e) {
+		try {
+			mVideoPlayer.releaseMediaPlayer();
+			mVideoPlayer.startPlayMedia();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+
+	@Override
+	public void onReceipt(String msg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAcceptErr(String msg) {
+		// TODO Auto-generated method stub
+		
 	}
 }
