@@ -1,4 +1,4 @@
-package com.syn.queuedisplay;
+package com.syn.queuedisplay.pizzahut;
 
 public class QueueData {
 	private int shopId;

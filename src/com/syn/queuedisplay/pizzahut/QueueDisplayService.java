@@ -1,4 +1,4 @@
-package com.syn.queuedisplay;
+package com.syn.queuedisplay.pizzahut;
 
 import java.lang.reflect.Type;
 

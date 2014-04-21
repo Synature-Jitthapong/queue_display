@@ -1,4 +1,4 @@
-package com.syn.queuedisplay;
+package com.syn.queuedisplay.pizzahut;
 
 import android.content.Context;
 import android.graphics.Rect;
