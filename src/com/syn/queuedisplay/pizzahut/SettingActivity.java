@@ -19,10 +19,7 @@ public class SettingActivity extends PreferenceActivity{
 	public static final String PREF_URL = "pref_url";
 	public static final String PREF_REFRESH = "pref_refresh";
 	public static final String PREF_VDO_DIR = "pref_vdo_dir";
-	public static final String PREF_QUEUE_SPEAK_DIR = "pref_queue_speak_dir";
 	public static final String PREF_INFO_TEXT = "pref_info_text";
-	public static final String PREF_SPEAK_TIMES = "pref_speak_time";
-	public static final String PREF_QUEUE_COLUMNS = "pref_queue_columns";
 
 	private static final boolean ALWAYS_SIMPLE_PREFS = false;
 
@@ -39,16 +36,12 @@ public class SettingActivity extends PreferenceActivity{
 		}
 		
 		addPreferencesFromResource(R.xml.pref_conn);
-		addPreferencesFromResource(R.xml.pref_general);
 		addPreferencesFromResource(R.xml.pref_resource);
 		bindPreferenceSummaryToValue(findPreference(PREF_SHOP_ID));
 		bindPreferenceSummaryToValue(findPreference(PREF_URL));
 		bindPreferenceSummaryToValue(findPreference(PREF_REFRESH));
 		bindPreferenceSummaryToValue(findPreference(PREF_VDO_DIR));
-		bindPreferenceSummaryToValue(findPreference(PREF_QUEUE_SPEAK_DIR));
 		bindPreferenceSummaryToValue(findPreference(PREF_INFO_TEXT));
-		bindPreferenceSummaryToValue(findPreference(PREF_SPEAK_TIMES));
-		bindPreferenceSummaryToValue(findPreference(PREF_QUEUE_COLUMNS));
 	}
 
 	@Override
@@ -109,22 +102,12 @@ public class SettingActivity extends PreferenceActivity{
 		Intent intent = null;
 		switch(item.getItemId()){
 		case android.R.id.home:
-			intent = new Intent(SettingActivity.this, MainActivity.class);
+			intent = new Intent(SettingActivity.this, QueueDisplayActivity.class);
 			startActivity(intent);
 			finish();
 			return true;
 		default :
 			return super.onOptionsItemSelected(item);
-		}
-	}
-	
-	public static class GeneralFragment extends PreferenceFragment{
-
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.pref_general);
-			bindPreferenceSummaryToValue(findPreference(PREF_QUEUE_COLUMNS));
 		}
 	}
 	
@@ -134,9 +117,7 @@ public class SettingActivity extends PreferenceActivity{
 			super.onCreate(savedInstanceState);
 			addPreferencesFromResource(R.xml.pref_resource);
 			bindPreferenceSummaryToValue(findPreference(PREF_VDO_DIR));
-			bindPreferenceSummaryToValue(findPreference(PREF_QUEUE_SPEAK_DIR));
 			bindPreferenceSummaryToValue(findPreference(PREF_INFO_TEXT));
-			bindPreferenceSummaryToValue(findPreference(PREF_SPEAK_TIMES));
 		}
 	}
 	

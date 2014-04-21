@@ -12,6 +12,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.google.gson.reflect.TypeToken;
+import com.j1tth4.mediaplayer.VideoPlayer;
 import com.j1tth4.mobile.connection.socket.ClientSocket;
 import com.j1tth4.mobile.connection.socket.ISocketConnection;
 import com.j1tth4.mobile.util.JSONUtil;
@@ -62,7 +63,8 @@ import android.widget.TextView;
  * 
  * @see SystemUiHider
  */
-public class QueueDisplayActivity extends Activity{
+public class QueueDisplayActivity extends Activity  implements Runnable, QueueServerSocket.ServerSocketListener,
+SpeakCallingQueue.OnPlaySoundListener, VideoPlayer.MediaPlayerStateListener{
 	/**
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -97,7 +99,6 @@ public class QueueDisplayActivity extends Activity{
 	private Handler handlerQueue;
 	private Handler handlerTake;
 	private Handler mHandlerWaitTake;
-	private MyMediaPlayer myMediaPlayer;
 	private boolean isPause = false;
 	
 	private QueueDisplayData config;
@@ -174,31 +175,7 @@ public class QueueDisplayActivity extends Activity{
 		
 		readQueueData();
 		readMarquee();
-
-		myMediaPlayer = 
-				new MyMediaPlayer(QueueDisplayActivity.this, surface, 
-						queueData.getVideoPath(), new MyMediaPlayer.MediaPlayerStateListener(){
-
-							@Override
-							public void onError(Exception e) {
-								try {
-									myMediaPlayer.releaseMediaPlayer();
-									myMediaPlayer.startPlayMedia();
-								} catch (Exception e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-							}
-
-							@Override
-							public void onPlayedFileName(String fileName) {
-								tvPlaying.setText(fileName);
-							}
-					
-				});
-		
-		//new Thread(this).start();
-		
+	
 		// update queue
 		if(queueData.isEnableQueue()){
 			queueLayout.setVisibility(View.VISIBLE);
@@ -658,80 +635,6 @@ public class QueueDisplayActivity extends Activity{
 			}
 		}).execute(serviceUrl);		
 	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		try {
-			myMediaPlayer.resume();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		try {
-			myMediaPlayer.pause();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		try {
-			isTakeRun = false;
-			isQueueRun = false;
-			handlerTake.removeCallbacks(updateQueueTake);
-			handlerQueue.removeCallbacks(updateQueue);
-			myMediaPlayer.releaseMediaPlayer();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void videoBackClicked(final View v){
-		myMediaPlayer.back();
-	}
-	
-	public void videoPauseClicked(final View v){
-		if(!isPause){
-			myMediaPlayer.pause();
-			((ImageButton)v).setImageResource(android.R.drawable.ic_media_play);
-			isPause = true;
-		}
-		else{
-			myMediaPlayer.resume();
-			((ImageButton)v).setImageResource(android.R.drawable.ic_media_pause);
-			isPause = false;
-		}
-	}
-	
-	public void videoNextClicked(final View v){
-		myMediaPlayer.next();
-	}
-	
-//	@Override
-//	public void run() {
-//		try {
-//			socketConn = new ClientSocket(queueData.getServerIp(), queueData.getPort());
-//			String msg;
-//			while ((msg = socketConn.receive()) != null) {
-//				Log.d("msg", msg);
-//				
-//			}
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			new Thread(this).start();
-//			e.printStackTrace();
-//		}
-//	}
 	
 	private class MarqueeAdapter extends BaseAdapter{
 		private LayoutInflater inflater;
