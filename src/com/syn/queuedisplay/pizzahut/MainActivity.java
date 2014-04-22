@@ -1,7 +1,6 @@
 package com.syn.queuedisplay.pizzahut;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -10,8 +9,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.j1tth4.mediaplayer.VideoPlayer;
 import com.j1tth4.mobile.util.Logger;
 import com.syn.pos.QueueDisplayInfo;
@@ -44,6 +41,13 @@ import android.widget.TextView;
  */
 public class MainActivity extends Activity  implements 
 	QueueServerSocket.ServerSocketListener, VideoPlayer.MediaPlayerStateListener{
+	
+	/**
+	 * code that send from pRoMiSe Front Program over socket 
+	 * it means let's update data from webservice 
+	 */
+	public static final int UPDATE_CODE = 601;
+	
 	/**
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -70,6 +74,7 @@ public class MainActivity extends Activity  implements
 	/**
 	 * The instance of the {@link SystemUiHider} for this activity.
 	 */
+	
 	private SystemUiHider mSystemUiHider;
 	
 	private VideoPlayer mVideoPlayer;
@@ -222,7 +227,6 @@ public class MainActivity extends Activity  implements
 	
 	private void scheduleTb(){
 		UpdateTbTask tbTask = new UpdateTbTask();
-		long update = QueueApplication.getRefresh();
 		mTbQTimer.schedule(tbTask, 1000, QueueApplication.getRefresh());
 	}
 	
@@ -506,16 +510,29 @@ public class MainActivity extends Activity  implements
 //		} catch (Exception e) {
 //		}
 		
-		if(QueueApplication.isEnableTb()){
-			if(mTbQTimer != null)
-				mTbQTimer.cancel();
-			scheduleTb();
+		String code = "0";
+		String computerId = "0";
+		try {
+			String[] seq = msg.split("|");
+			code = seq[0];
+			computerId = seq[1];
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
-		if(QueueApplication.isEnableTw()){
-			if(mTwQTimer != null)
-				mTwQTimer.cancel();
-			scheduleTw();
+		if(Integer.parseInt(code) == UPDATE_CODE){
+			if(QueueApplication.isEnableTb()){
+				if(mTbQTimer != null)
+					mTbQTimer.cancel();
+				scheduleTb();
+			}
+			
+			if(QueueApplication.isEnableTw()){
+				if(mTwQTimer != null)
+					mTwQTimer.cancel();
+				scheduleTw();
+			}
 		}
 	}
 
