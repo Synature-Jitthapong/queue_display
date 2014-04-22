@@ -11,12 +11,12 @@ import android.content.Context;
 
 public class QueueTakeAwayService extends QueueDisplayMainService {
 	
-	private Callback callback;
+	private LoadTakeAwayQueueListener mListener;
 	
-	public QueueTakeAwayService(Context c, Callback listener) {
+	public QueueTakeAwayService(Context c, LoadTakeAwayQueueListener listener) {
 		super(c, GET_TAKEAWAY_QUEUE_METHOD);
 		
-		callback = listener;
+		mListener = listener;
 	}
 
 	@Override
@@ -33,26 +33,24 @@ public class QueueTakeAwayService extends QueueDisplayMainService {
 					List<TakeAwayData> takeAwayLst = 
 							(List<TakeAwayData>) jsonUtil.toObject(type, wsResult.getSzResultData());
 					
-					callback.onSuccess(takeAwayLst);
+					mListener.onPost(takeAwayLst);
 				} catch (Exception e) {
-					callback.onError(e.getMessage());
+					mListener.onError(e.getMessage());
 				}
 			}else{
-				callback.onError(result);
+				mListener.onError(result);
 			}
 		} catch (Exception e) {
-			callback.onError(result);
+			mListener.onError(result);
 		}
 	}
 
 	@Override
 	protected void onPreExecute() {
-		callback.onProgress();
+		mListener.onPre();
 	}
 
-	public static interface Callback{
-		public void onSuccess(List<TakeAwayData> takeAwayLst);
-		public void onProgress();
-		public void onError(String msg);
+	public static interface LoadTakeAwayQueueListener extends WebServiceProgressListener{
+		public void onPost(List<TakeAwayData> takeAwayLst);
 	}
 }

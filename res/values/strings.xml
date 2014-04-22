@@ -8,8 +8,7 @@
     <string name="ip_address">IP Address</string>
     <string name="web_service">Web Service</string>
     <string name="vdo_dir">Video Dir</string>
-    <string name="enabled_queue">Enable Queue</string>
-    <string name="enable_tw_queu">Enable take away queue</string>
+    <string name="enable_tw_queue">Enable take away queue</string>
     <string name="add">Add</string>
     <string name="information_text">Information text</string>
     <string name="port">Port</string>
@@ -27,5 +26,6 @@
     <string name="general">General</string>
     <string name="resource">Resource</string>
     <string name="video_directory">Directory of video file</string>
+    <string name="enable_table_queue">Enable Table Queue</string>
 
 </resources>

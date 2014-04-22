@@ -45,10 +45,22 @@ public class QueueApplication extends Application{
 		return url;
 	}
 
-	public static String getRefresh(){
+	public static boolean isEnableTb(){
 		SharedPreferences sharedPref = PreferenceManager
 				.getDefaultSharedPreferences(sContext);
-		return sharedPref.getString(SettingActivity.PREF_REFRESH, "15000");
+		return sharedPref.getBoolean(SettingActivity.PREF_ENABLE_TB, false);
+	}
+	
+	public static boolean isEnableTw(){
+		SharedPreferences sharedPref = PreferenceManager
+				.getDefaultSharedPreferences(sContext);
+		return sharedPref.getBoolean(SettingActivity.PREF_ENABLE_TW, false);
+	}
+	
+	public static long getRefresh(){
+		SharedPreferences sharedPref = PreferenceManager
+				.getDefaultSharedPreferences(sContext);
+		return sharedPref.getLong(SettingActivity.PREF_REFRESH, 15000);
 	}
 	
 	public static String getInfoText(){
