@@ -1,46 +1,40 @@
-package com.syn.queuedisplay.pizzahut;
+package com.syn.queuedisplay.custom;
 
 import java.lang.reflect.Type;
 
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.j1tth4.mobile.util.JSONUtil;
 import com.syn.pos.QueueDisplayInfo;
-
 import android.content.Context;
 
 public class QueueDisplayService extends QueueDisplayMainService {
+	private LoadQueueListener mListener;
 	
-	private Callback callback;
-	
-	public QueueDisplayService(Context c, Callback listener) {
-		super(c,  GET_CURR_ALL_QUEUE_METHOD);
-		
-		callback = listener;
+	public QueueDisplayService(Context c, LoadQueueListener listener) {
+		super(c, GET_CURR_ALL_QUEUE_METHOD);
+		mListener = listener;
 	}
 
 	@Override
 	protected void onPostExecute(String result) {
-		JSONUtil jsonUtil = new JSONUtil();
+		Gson gson = new Gson();
 		Type type = new TypeToken<QueueDisplayInfo>() {}.getType();
-		
 		try {
 			QueueDisplayInfo queueDisplayInfo = 
-					(QueueDisplayInfo) jsonUtil.toObject(type, result);
+					(QueueDisplayInfo) gson.fromJson(result, type);
 			
-			callback.onSuccess(queueDisplayInfo);
+			mListener.onPost(queueDisplayInfo);
 		} catch (Exception e) {
-			callback.onError(e.getMessage());
+			mListener.onError(e.getMessage());
 		}
 	}
 
 	@Override
 	protected void onPreExecute() {
-		callback.onProgress();
+		mListener.onPre();
 	}
 	
-	public static interface Callback{
-		public void onSuccess(QueueDisplayInfo qInfo);
-		public void onProgress();
-		public void onError(String msg);
+	public static interface LoadQueueListener extends WebServiceProgressListener{
+		void onPost(QueueDisplayInfo qInfo);
 	}
 }
