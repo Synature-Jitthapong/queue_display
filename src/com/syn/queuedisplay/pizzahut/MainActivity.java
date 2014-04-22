@@ -355,7 +355,7 @@ public class MainActivity extends Activity  implements
 			strHtml.append("</marquee>");
 			strHtml.append("</body></html>");
 			mWebView.setVisibility(View.VISIBLE);
-			mWebView.loadData(strHtml.toString(), "text/html", "UTF-8");
+			mWebView.loadData(strHtml.toString(), "text/html; charset=UTF-8", null);
 		} else {
 			mWebView.setVisibility(View.GONE);
 		}
