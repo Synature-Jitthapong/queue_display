@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <supports-screens />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:name="com.syn.queuedisplay.pizzahut.QueueApplication"
@@ -29,7 +30,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="SettingActivity" android:label="@menu/setting"></activity>
+        <activity 
+            android:name="com.syn.queuedisplay.pizzahut.SettingActivity" 
+            android:screenOrientation="landscape" android:windowSoftInputMode="stateAlwaysHidden"
+            android:label="@menu/setting" android:theme="@android:style/Theme.Holo"></activity>
     </application>
 
 </manifest>

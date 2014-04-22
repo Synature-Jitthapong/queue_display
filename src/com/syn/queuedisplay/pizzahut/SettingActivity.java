@@ -15,6 +15,7 @@ import android.preference.PreferenceManager;
 import android.view.MenuItem;
 
 public class SettingActivity extends PreferenceActivity{
+	
 	public static final String PREF_SHOP_ID = "pref_shop_id";
 	public static final String PREF_URL = "pref_url";
 	public static final String PREF_REFRESH = "pref_refresh";

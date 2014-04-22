@@ -3,13 +3,10 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.syn.queuedisplay.custom.SettingActivity$ConnectionFragment"
+        android:fragment="com.syn.queuedisplay.pizzahut.SettingActivity$ConnectionFragment"
         android:title="@string/connection"/>
     <header
-        android:fragment="com.syn.queuedisplay.custom.SettingActivity$GeneralFragment"
-        android:title="@string/general"/>
-    <header
-        android:fragment="com.syn.queuedisplay.custom.SettingActivity$ResourceFragment"
+        android:fragment="com.syn.queuedisplay.pizzahut.SettingActivity$ResourceFragment"
         android:title="@string/resource"/>
 
 </preference-headers>

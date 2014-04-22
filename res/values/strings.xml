@@ -27,5 +27,6 @@
     <string name="resource">Resource</string>
     <string name="video_directory">Directory of video file</string>
     <string name="enable_table_queue">Enable Table Queue</string>
+    <string name="enable_queue">Enable Queue</string>
 
 </resources>

@@ -60,7 +60,15 @@ public class QueueApplication extends Application{
 	public static long getRefresh(){
 		SharedPreferences sharedPref = PreferenceManager
 				.getDefaultSharedPreferences(sContext);
-		return sharedPref.getLong(SettingActivity.PREF_REFRESH, 15000);
+		long refresh = 60000;
+		try {
+			refresh = Long.parseLong(
+					sharedPref.getString(SettingActivity.PREF_REFRESH, "60000"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return refresh;
 	}
 	
 	public static String getInfoText(){

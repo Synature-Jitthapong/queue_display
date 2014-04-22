@@ -7,7 +7,7 @@
             android:title="@string/url" 
             android:summary="@string/backoffice_url"/>
 </PreferenceCategory>
-	<PreferenceCategory>
+	<PreferenceCategory android:title="@string/enable_queue">
 		<CheckBoxPreference android:key="pref_enable_tw" android:title="@string/enable_tw_queue" android:defaultValue="true"/>
 		<CheckBoxPreference android:key="pref_enable_tb" android:title="@string/enable_table_queue"/>
 	</PreferenceCategory><ListPreference android:title="@string/refresh" 

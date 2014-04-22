@@ -4,58 +4,34 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.j1tth4.mediaplayer.VideoPlayer;
-import com.j1tth4.mobile.connection.socket.ClientSocket;
-import com.j1tth4.mobile.connection.socket.ISocketConnection;
-import com.j1tth4.mobile.util.JSONUtil;
 import com.j1tth4.mobile.util.Logger;
-import com.j1tth4.mobile.util.MyMediaPlayer;
 import com.syn.pos.QueueDisplayInfo;
 import com.syn.queuedisplay.util.SystemUiHider;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.Message;
-import android.provider.Settings.Secure;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.view.WindowManager;
-import android.view.View.OnClickListener;
 import android.webkit.WebView;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.HorizontalScrollView;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -167,8 +143,6 @@ public class MainActivity extends Activity  implements
 			e.printStackTrace();
 		}
 		
-
-		
 		// Set up an instance of SystemUiHider to control the system UI for
 		// this activity.
 		mSystemUiHider = SystemUiHider.getInstance(this, contentView,
@@ -248,12 +222,13 @@ public class MainActivity extends Activity  implements
 	
 	private void scheduleTb(){
 		UpdateTbTask tbTask = new UpdateTbTask();
-		mTbQTimer.schedule(tbTask, 0, QueueApplication.getRefresh());
+		long update = QueueApplication.getRefresh();
+		mTbQTimer.schedule(tbTask, 1000, QueueApplication.getRefresh());
 	}
 	
 	private void scheduleTw(){
 		UpdateTwTask twTask = new UpdateTwTask();
-		mTwQTimer.schedule(twTask, 0, QueueApplication.getRefresh());
+		mTwQTimer.schedule(twTask, 2000, QueueApplication.getRefresh());
 	}
 	
 	class UpdateTwTask extends TimerTask{
@@ -369,11 +344,12 @@ public class MainActivity extends Activity  implements
 		if (!QueueApplication.getInfoText().equals("")) {
 			mWebView.setVisibility(View.VISIBLE);
 			StringBuilder strHtml = new StringBuilder();
-			strHtml.append("<body style=\"text-align:center;background:#BEBEBE; \">");
+			strHtml.append("<html><head><meta charset=\"UTF-8\"></head>");
+			strHtml.append("<body style=\"text-align:center;background:#0B0B0B; color:#F0F0F0 \">");
 			strHtml.append("<marquee direction=\"left\" style=\"width: auto;\" >");
 			strHtml.append(QueueApplication.getInfoText());
 			strHtml.append("</marquee>");
-			strHtml.append("</body>");
+			strHtml.append("</body></html>");
 			mWebView.setVisibility(View.VISIBLE);
 			mWebView.loadData(strHtml.toString(), "text/html", "UTF-8");
 		} else {
@@ -391,7 +367,8 @@ public class MainActivity extends Activity  implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_settings:
-			startActivity(new Intent(MainActivity.this, SettingActivity.class));
+			Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+			startActivity(intent);
 			finish();
 			return true;
 		default:
@@ -508,31 +485,37 @@ public class MainActivity extends Activity  implements
 
 	@Override
 	public void onError(Exception e) {
-		try {
-			mVideoPlayer.releaseMediaPlayer();
-			mVideoPlayer.startPlayMedia();
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		releaseVideo();
 	}
 
 	@Override
 	public void onReceipt(String msg) {
-		Gson gson = new Gson();
-		Type type = new TypeToken<QueueDisplayInfo>() {}.getType();
-		try {
-			final QueueDisplayInfo queueDisplayInfo = 
-					(QueueDisplayInfo) gson.fromJson(msg, type);
-			runOnUiThread(new Runnable(){
-
-				@Override
-				public void run() {
-					updateQueueData(queueDisplayInfo);
-				}
-				
-			});
-		} catch (Exception e) {
+//		Gson gson = new Gson();
+//		Type type = new TypeToken<QueueDisplayInfo>() {}.getType();
+//		try {
+//			final QueueDisplayInfo queueDisplayInfo = 
+//					(QueueDisplayInfo) gson.fromJson(msg, type);
+//			runOnUiThread(new Runnable(){
+//
+//				@Override
+//				public void run() {
+//					updateQueueData(queueDisplayInfo);
+//				}
+//				
+//			});
+//		} catch (Exception e) {
+//		}
+		
+		if(QueueApplication.isEnableTb()){
+			if(mTbQTimer != null)
+				mTbQTimer.cancel();
+			scheduleTb();
+		}
+		
+		if(QueueApplication.isEnableTw()){
+			if(mTwQTimer != null)
+				mTwQTimer.cancel();
+			scheduleTw();
 		}
 	}
 
@@ -542,7 +525,20 @@ public class MainActivity extends Activity  implements
 		
 	}
 	
+	private void releaseVideo(){
+		try {
+			mVideoPlayer.pause();
+			mVideoPlayer.releaseMediaPlayer();
+			mVideoPlayer.startPlayMedia();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
 	private void release(){
+		releaseVideo();
+		
 		if(mTwQTimer != null)
 			mTwQTimer.cancel();
 		if(mTbQTimer != null)
@@ -564,8 +560,9 @@ public class MainActivity extends Activity  implements
 	}
 
 	@Override
-	protected void onDestroy() {
+	protected void onPause() {
 		release();
-		super.onDestroy();
+		super.onPause();
 	}
+
 }
