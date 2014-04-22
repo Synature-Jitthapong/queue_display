@@ -117,7 +117,7 @@ public class MainActivity extends Activity  implements
 		super.onCreate(savedInstanceState);
 		mInflater = LayoutInflater.from(MainActivity.this);
 		
-		setContentView(R.layout.activity_queue_display);
+		setContentView(R.layout.main_activity);
 		final View contentView = findViewById(R.id.headerLayout);
 		mSurface = (SurfaceView) findViewById(R.id.surfaceView1);
 		mWebView = (WebView) findViewById(R.id.webView1);
