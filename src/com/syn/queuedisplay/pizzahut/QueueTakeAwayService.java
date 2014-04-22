@@ -14,7 +14,7 @@ public class QueueTakeAwayService extends QueueDisplayMainService {
 	private Callback callback;
 	
 	public QueueTakeAwayService(Context c, Callback listener) {
-		super(c, "WSiKDS_JSON_GetTakeAwayDisplayData");
+		super(c, GET_TAKEAWAY_QUEUE_METHOD);
 		
 		callback = listener;
 	}

@@ -16,6 +16,7 @@ import com.j1tth4.mediaplayer.VideoPlayer;
 import com.j1tth4.mobile.connection.socket.ClientSocket;
 import com.j1tth4.mobile.connection.socket.ISocketConnection;
 import com.j1tth4.mobile.util.JSONUtil;
+import com.j1tth4.mobile.util.Logger;
 import com.j1tth4.mobile.util.MyMediaPlayer;
 import com.syn.pos.QueueDisplayInfo;
 import com.syn.queuedisplay.util.SystemUiHider;
@@ -236,21 +237,42 @@ public class QueueDisplayActivity extends Activity  implements
 		delayedHide(100);
 	}
 
-	private Runnable updateQueue = new Runnable() {
+	private Runnable mUpdateQueue = new Runnable() {
 
 		@Override
 		public void run() {
-			if (mIsQueueRun) {
-				try {
-					createQueueFromService();
-					mHandlerQueue.postDelayed(this, mQueueData.getUpdateInterval());
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			try {
+				new QueueDisplayService(QueueApplication.sContext, 
+						mLoadQueueListener).execute(QueueApplication.getFullUrl());
+				mHandlerQueue.postDelayed(this, Long.parseLong(QueueApplication.getRefresh()));
+			} catch (Exception e) {
+				Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR, 
+						QueueApplication.LOG_FILE_NAME, e.getMessage());
+				e.printStackTrace();
 			}
 		}
 
+	};
+	
+	private QueueDisplayService.LoadQueueListener mLoadQueueListener = 
+			new QueueDisplayService.LoadQueueListener() {
+				
+				@Override
+				public void onPre() {
+				}
+				
+				@Override
+				public void onPost() {
+				}
+				
+				@Override
+				public void onError(String msg) {
+				}
+				
+				@Override
+				public void onPost(QueueDisplayInfo queueInfo) {
+					updateQueueData(queueInfo);
+				}
 	};
 
 	private final Thread mWaitTimeThread = new Thread(new Runnable(){
@@ -375,7 +397,7 @@ public class QueueDisplayActivity extends Activity  implements
 		for(QueueDisplayInfo.QueueInfo qData : qInfo.xListQueueInfo){
 			if(qData.getiQueueGroupID() == 1){
 				View vA = mInflater.inflate(R.layout.queue_template, null);
-				TextView tvQ = (TextView) vA.findViewById(R.id.textViewQueue);
+				TextView tvQ = (TextView) vA.findViewById(R.id.tvl);
 				TextView tvSub = (TextView) vA.findViewById(R.id.tvQueueSub);
 				tvQ.setText(qData.getSzQueueName());
 				tvSub.setText(qData.getSzCustomerName());
@@ -417,36 +439,6 @@ public class QueueDisplayActivity extends Activity  implements
 		mTvCallASub.setText(qInfo.getSzCurQueueCustomerA());
 		mTvCallBSub.setText(qInfo.getSzCurQueueCustomerB());
 		mTvCallCSub.setText(qInfo.getSzCurQueueCustomerC());
-	}
-	
-	private void createQueueFromService(){
-		Log.i("queue", "call queue " + mQueueData.getUpdateInterval());
-		
-		// call service
-		new QueueDisplayService(QueueDisplayActivity.this, mQueueData.getShopId(), deviceCode, 
-				new QueueDisplayService.Callback() {
-			
-			@Override
-			public void onSuccess(QueueDisplayInfo qInfo) {
-//				JSONUtil jsonUtil = new JSONUtil();
-//				Type type = new TypeToken<QueueDisplayInfo>() {}.getType();
-//				String result = "{\"xListQueueInfo\":[{\"iQueueID\":8,\"iQueueIndex\":3,\"iQueueGroupID\":1,\"szQueueName\":\"A3\",\"szCustomerName\":\"testing\",\"iCustomerQty\":3,\"szStartQueueDate\":\"2013-09-24 15:01:29\",\"iWaitQueueMinTime\":23,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":7,\"iQueueIndex\":1,\"iQueueGroupID\":2,\"szQueueName\":\"B1\",\"szCustomerName\":\"testing\",\"iCustomerQty\":3,\"szStartQueueDate\":\"2013-09-24 14:19:45\",\"iWaitQueueMinTime\":65,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":5,\"iQueueIndex\":1,\"iQueueGroupID\":3,\"szQueueName\":\"C1\",\"szCustomerName\":\"jjjj\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 13:50:48\",\"iWaitQueueMinTime\":94,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":6,\"iQueueIndex\":2,\"iQueueGroupID\":3,\"szQueueName\":\"C2\",\"szCustomerName\":\"kkk\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 14:12:30\",\"iWaitQueueMinTime\":72,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0},{\"iQueueID\":6,\"iQueueIndex\":2,\"iQueueGroupID\":3,\"szQueueName\":\"C2\",\"szCustomerName\":\"kkk\",\"iCustomerQty\":1,\"szStartQueueDate\":\"2013-09-24 14:12:30\",\"iWaitQueueMinTime\":72,\"iWaitQueueCurrentOfGroup\":0,\"iHasPreOrderList\":0}],\"szCurQueueGroupA\":\"A1\",\"szCurQueueCustomerA\":\"Customer name a\",\"szCurQueueGroupB\":\"B1\",\"szCurQueueCustomerB\":\"Customer name b\",\"szCurQueueGroupC\":\"C1\",\"szCurQueueCustomerC\":\"Customer name c\"}";
-//				
-//				qInfo = (QueueDisplayInfo) jsonUtil.toObject(type, result);
-
-				drawTableQueue(qInfo);
-			}
-			
-			@Override
-			public void onProgress() {
-				
-			}
-			
-			@Override
-			public void onError(String msg) {
-
-			}
-		}).execute(serviceUrl);
 	}
 	
 	private void createTakeAwayFromService(){

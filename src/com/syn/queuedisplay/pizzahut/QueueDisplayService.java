@@ -13,7 +13,7 @@ public class QueueDisplayService extends QueueDisplayMainService {
 	private Callback callback;
 	
 	public QueueDisplayService(Context c, Callback listener) {
-		super(c,  "WSiQueue_JSON_GetCurrentAllQueueDisplay");
+		super(c,  GET_CURR_ALL_QUEUE_METHOD);
 		
 		callback = listener;
 	}

@@ -5,9 +5,11 @@ import android.content.Context;
 import com.j1tth4.mobile.util.DotNetWebServiceTask;
 
 public class QueueDisplayMainService extends DotNetWebServiceTask {
+	
 	public static final String PARAM_SHOP_ID = "iShopID";
 	public static final String PARAM_DEVICE_CODE = "szDeviceCode";
 	public static final String GET_CURR_ALL_QUEUE_METHOD = "WSiQueue_JSON_GetCurrentAllQueueDisplay";
+	public static final String GET_TAKEAWAY_QUEUE_METHOD = "WSiKDS_JSON_GetTakeAwayDisplayData";
 	
 	public QueueDisplayMainService(Context c, String method) {
 		super(c, method);
