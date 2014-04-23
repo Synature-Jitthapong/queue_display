@@ -363,15 +363,21 @@ public class MainActivity extends Activity  implements
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.setting, menu);
+		getMenuInflater().inflate(R.menu.main_activity, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent = null;
 		switch (item.getItemId()) {
 		case R.id.action_settings:
-			Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+			intent = new Intent(MainActivity.this, SettingActivity.class);
+			startActivity(intent);
+			finish();
+			return true;
+		case R.id.action_about:
+			intent = new Intent(MainActivity.this, AboutActivity.class);
 			startActivity(intent);
 			finish();
 			return true;
@@ -512,28 +518,38 @@ public class MainActivity extends Activity  implements
 		
 		String code = "0";
 		String computerId = "0";
-		try {
-			String[] seq = msg.split("|");
-			code = seq[0];
-			computerId = seq[1];
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-		if(Integer.parseInt(code) == UPDATE_CODE){
-			if(QueueApplication.isEnableTb()){
-				if(mTbQTimer != null)
-					mTbQTimer.cancel();
-				scheduleTb();
-			}
-			
-			if(QueueApplication.isEnableTw()){
-				if(mTwQTimer != null)
-					mTwQTimer.cancel();
-				scheduleTw();
+		if(!msg.equals("")){
+			try {
+				String[] seq = msg.split("|");
+				code = seq[0];
+				computerId = seq[1];
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
+		Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR, 
+				QueueApplication.LOG_FILE_NAME, msg);
+		
+		//if(Integer.parseInt(code) == UPDATE_CODE){
+			try {
+				if(QueueApplication.isEnableTb()){
+					if(mTbQTimer != null)
+						mTbQTimer.cancel();
+					scheduleTb();
+				}
+				
+				if(QueueApplication.isEnableTw()){
+					if(mTwQTimer != null)
+						mTwQTimer.cancel();
+					scheduleTw();
+				}
+			} catch (Exception e) {
+				Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR, 
+						QueueApplication.LOG_FILE_NAME, "restart timer " + e.getMessage());
+			}
+		//}
 	}
 
 	@Override
