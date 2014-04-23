@@ -80,6 +80,7 @@ public class MainActivity extends Activity  implements
 	private VideoPlayer mVideoPlayer;
 	
 	private Thread mSocketThread;
+	private QueueServerSocket mSocket;
 	
 	private Timer mTwQTimer;
 	private Timer mTbQTimer;
@@ -202,11 +203,16 @@ public class MainActivity extends Activity  implements
 		
 		// init socket thread
 		try {
-			mSocketThread = new Thread(new QueueServerSocket(this));
+			mSocket = new QueueServerSocket(this);
+			mSocketThread = new Thread(mSocket);
 			mSocketThread.start();
+
+			Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR,
+					QueueApplication.LOG_FILE_NAME, " start socket thread ");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR,
+					QueueApplication.LOG_FILE_NAME, " Error start socket thread " + 
+					e.getMessage());
 		}
 		
 		// create marquee
@@ -229,7 +235,8 @@ public class MainActivity extends Activity  implements
 		mTbQTimer.schedule(tbTask, 1000, QueueApplication.getRefresh());
 		
 		Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR,
-				QueueApplication.LOG_FILE_NAME, " start tb timer ");
+				QueueApplication.LOG_FILE_NAME, " start table queue timer " 
+						+ QueueApplication.getRefresh() + "ms.");
 	}
 	
 	private void scheduleTw(){
@@ -238,7 +245,8 @@ public class MainActivity extends Activity  implements
 		mTwQTimer.schedule(twTask, 2000, QueueApplication.getRefresh());
 
 		Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR,
-				QueueApplication.LOG_FILE_NAME, " start tw timer ");
+				QueueApplication.LOG_FILE_NAME, " start pickup queue timer "
+						+ QueueApplication.getRefresh() + "ms.");
 	}
 	
 	class UpdateTwTask extends TimerTask{
@@ -375,17 +383,12 @@ public class MainActivity extends Activity  implements
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent intent = null;
 		switch (item.getItemId()) {
 		case R.id.action_settings:
-			intent = new Intent(MainActivity.this, SettingActivity.class);
-			startActivity(intent);
-			finish();
+			startActivity(new Intent(MainActivity.this, SettingActivity.class));
 			return true;
 		case R.id.action_about:
-			intent = new Intent(MainActivity.this, AboutActivity.class);
-			startActivity(intent);
-			finish();
+			startActivity(new Intent(MainActivity.this, AboutActivity.class));
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -512,31 +515,26 @@ public class MainActivity extends Activity  implements
 				QueueApplication.LOG_FILE_NAME, "mesg from soket : " + msg);
 		try {
 			if (QueueApplication.isEnableTb()) {
-				if (mTbQTimer != null) {
-					mTbQTimer.cancel();
-					mTbQTimer.purge();
-				}
+				stopTbTimer();
 				scheduleTb();
 			}
 
 			if (QueueApplication.isEnableTw()) {
-				if (mTwQTimer != null) {
-					mTwQTimer.cancel();
-					mTwQTimer.purge();
-				}
+				stopTwTimer();
 				scheduleTw();
 			}
 		} catch (Exception e) {
 			Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR,
-					QueueApplication.LOG_FILE_NAME, "error when restart timer "
+					QueueApplication.LOG_FILE_NAME, "error when restart timer : "
 							+ e.getMessage());
 		}
 	}
 
 	@Override
 	public void onAcceptErr(String msg) {
-		// TODO Auto-generated method stub
-		
+		Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR,
+				QueueApplication.LOG_FILE_NAME, " bad receive message : "
+						+ msg);
 	}
 
 	private void releaseVideoPlayer(){
@@ -544,17 +542,44 @@ public class MainActivity extends Activity  implements
 		mVideoPlayer.releaseMediaPlayer();
 	}
 	
-	private void release(){	
-		releaseVideoPlayer();
-		if(mTwQTimer != null){
-			mTwQTimer.cancel();
-			mTwQTimer.purge();
-		}
+	private void stopTbTimer(){
 		if(mTbQTimer != null){
 			mTbQTimer.cancel();
 			mTbQTimer.purge();
+
+			Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR,
+					QueueApplication.LOG_FILE_NAME, "stop table queue timer");
 		}
+	}
+	
+	private void stopTwTimer(){
+		if(mTwQTimer != null){
+			mTwQTimer.cancel();
+			mTwQTimer.purge();
+
+			Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR,
+					QueueApplication.LOG_FILE_NAME, "stop pickup queue timer");
+		}
+	}
+	
+	private void release(){	
+		releaseVideoPlayer();
 		stopSocketThread();
+		if(QueueApplication.isEnableTw())
+			stopTwTimer();
+		if(QueueApplication.isEnableTb())
+			stopTbTimer();
+	}
+	
+	private void closeSocket(){
+		try {
+			mSocket.close();
+			Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR,
+					QueueApplication.LOG_FILE_NAME, " close socket ");
+		} catch (IOException e) {
+			Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR,
+					QueueApplication.LOG_FILE_NAME, " Error stop socket ");
+		}	
 	}
 	
 	private synchronized void stopSocketThread(){
@@ -562,6 +587,7 @@ public class MainActivity extends Activity  implements
 		{
 			try {
 				mSocketThread.interrupt();
+				mSocketThread = null;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -570,10 +596,23 @@ public class MainActivity extends Activity  implements
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		if(mVideoPlayer.isPause())
+			mVideoPlayer.resume();
+	}
+
+	@Override
 	protected void onPause() {
-		release();
+		mVideoPlayer.pause();
 		super.onPause();
-		finish();
+	}
+
+	@Override
+	protected void onDestroy() {
+		release();
+		closeSocket();
+		super.onDestroy();
 	}
 
 }

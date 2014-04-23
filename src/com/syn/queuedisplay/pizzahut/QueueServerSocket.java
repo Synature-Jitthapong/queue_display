@@ -9,6 +9,8 @@ import java.net.Socket;
 public class QueueServerSocket implements Runnable{
 	public static final int PORT = 6060;
 	
+	private boolean isSocketClosed = false;
+	
 	private ServerSocketListener mListener;
 	private ServerSocket mSocket; 
 
@@ -20,7 +22,7 @@ public class QueueServerSocket implements Runnable{
 	@Override
 	public void run() {
 		Socket socket = null;
-		while(!Thread.currentThread().isInterrupted()){
+		while(!isSocketClosed){
 			try {
 				socket = mSocket.accept();
 				BufferedReader bf = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -31,6 +33,11 @@ public class QueueServerSocket implements Runnable{
 				mListener.onAcceptErr(e.getMessage());
 			}
 		}
+	}
+	
+	public void close() throws IOException{
+		mSocket.close();
+		isSocketClosed = true;
 	}
 	
 	public static interface ServerSocketListener{

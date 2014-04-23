@@ -4,7 +4,7 @@
 
     <header
         android:fragment="com.syn.queuedisplay.pizzahut.SettingActivity$ConnectionFragment"
-        android:title="@string/connection"/>
+        android:title="@string/queue"/>
     <header
         android:fragment="com.syn.queuedisplay.pizzahut.SettingActivity$ResourceFragment"
         android:title="@string/resource"/>

@@ -29,6 +29,7 @@ public class SettingActivity extends PreferenceActivity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setTitle(R.string.title_activity_setting);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		setupSimplePreferencesScreen();
 	}
@@ -102,11 +103,8 @@ public class SettingActivity extends PreferenceActivity{
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent intent = null;
 		switch(item.getItemId()){
 		case android.R.id.home:
-			intent = new Intent(SettingActivity.this, MainActivity.class);
-			startActivity(intent);
 			finish();
 			return true;
 		default :

@@ -43,7 +43,7 @@
         </activity>
         <activity
             android:name="com.syn.queuedisplay.pizzahut.AboutActivity"
-            android:label="@string/title_activity_about" android:theme="@android:style/Theme.Holo">
+            android:label="@string/title_activity_about" android:theme="@android:style/Theme.Holo" android:screenOrientation="landscape">
         </activity>
     </application>
 

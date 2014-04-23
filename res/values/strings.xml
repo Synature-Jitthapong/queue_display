@@ -19,6 +19,7 @@
     <string name="pickup_queue">Pickup Queue</string>
     <string name="table_queue">Table Queue</string>
     <string name="connection">Connection</string>
+    <string name="queue">Queue</string>
     <string name="url">URL</string>
     <string name="refresh">Refresh</string>
     <string name="backoffice_url">Backoffice URL</string>

@@ -2,7 +2,6 @@ package com.syn.queuedisplay.pizzahut;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -29,7 +28,6 @@ public class AboutActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
 		case android.R.id.home:
-			startActivity(new Intent(AboutActivity.this, MainActivity.class));
 			finish();
 			return true;
 		default:
