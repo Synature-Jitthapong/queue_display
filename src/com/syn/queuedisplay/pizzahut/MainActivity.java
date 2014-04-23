@@ -183,7 +183,6 @@ public class MainActivity extends Activity  implements
 		
 		if(QueueApplication.isEnableTb()){
 			mQueueLayout.setVisibility(View.VISIBLE);
-			mTbQTimer = new Timer();
 			
 			scheduleTb();
 		}else{
@@ -192,7 +191,6 @@ public class MainActivity extends Activity  implements
 		
 		if(QueueApplication.isEnableTw()){
 			mQueueTakeLayout.setVisibility(View.VISIBLE);
-			mTwQTimer = new Timer();
 			
 			scheduleTw();
 			
@@ -226,13 +224,21 @@ public class MainActivity extends Activity  implements
 	}
 	
 	private void scheduleTb(){
+		mTbQTimer = new Timer();
 		UpdateTbTask tbTask = new UpdateTbTask();
 		mTbQTimer.schedule(tbTask, 1000, QueueApplication.getRefresh());
+		
+		Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR,
+				QueueApplication.LOG_FILE_NAME, " start tb timer ");
 	}
 	
 	private void scheduleTw(){
+		mTwQTimer = new Timer();
 		UpdateTwTask twTask = new UpdateTwTask();
 		mTwQTimer.schedule(twTask, 2000, QueueApplication.getRefresh());
+
+		Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR,
+				QueueApplication.LOG_FILE_NAME, " start tw timer ");
 	}
 	
 	class UpdateTwTask extends TimerTask{
@@ -495,61 +501,36 @@ public class MainActivity extends Activity  implements
 
 	@Override
 	public void onError(Exception e) {
-		releaseVideo();
+		mVideoPlayer.pause();
+		mVideoPlayer.releaseMediaPlayer();
+		mVideoPlayer.startPlayMedia();
 	}
 
 	@Override
 	public void onReceipt(String msg) {
-//		Gson gson = new Gson();
-//		Type type = new TypeToken<QueueDisplayInfo>() {}.getType();
-//		try {
-//			final QueueDisplayInfo queueDisplayInfo = 
-//					(QueueDisplayInfo) gson.fromJson(msg, type);
-//			runOnUiThread(new Runnable(){
-//
-//				@Override
-//				public void run() {
-//					updateQueueData(queueDisplayInfo);
-//				}
-//				
-//			});
-//		} catch (Exception e) {
-//		}
-		
-		String code = "0";
-		String computerId = "0";
-		
-		if(!msg.equals("")){
-			try {
-				String[] seq = msg.split("|");
-				code = seq[0];
-				computerId = seq[1];
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR,
+				QueueApplication.LOG_FILE_NAME, "mesg from soket : " + msg);
+		try {
+			if (QueueApplication.isEnableTb()) {
+				if (mTbQTimer != null) {
+					mTbQTimer.cancel();
+					mTbQTimer.purge();
+				}
+				scheduleTb();
 			}
+
+			if (QueueApplication.isEnableTw()) {
+				if (mTwQTimer != null) {
+					mTwQTimer.cancel();
+					mTwQTimer.purge();
+				}
+				scheduleTw();
+			}
+		} catch (Exception e) {
+			Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR,
+					QueueApplication.LOG_FILE_NAME, "error when restart timer "
+							+ e.getMessage());
 		}
-		Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR, 
-				QueueApplication.LOG_FILE_NAME, msg);
-		
-		//if(Integer.parseInt(code) == UPDATE_CODE){
-			try {
-				if(QueueApplication.isEnableTb()){
-					if(mTbQTimer != null)
-						mTbQTimer.cancel();
-					scheduleTb();
-				}
-				
-				if(QueueApplication.isEnableTw()){
-					if(mTwQTimer != null)
-						mTwQTimer.cancel();
-					scheduleTw();
-				}
-			} catch (Exception e) {
-				Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR, 
-						QueueApplication.LOG_FILE_NAME, "restart timer " + e.getMessage());
-			}
-		//}
 	}
 
 	@Override
@@ -557,26 +538,22 @@ public class MainActivity extends Activity  implements
 		// TODO Auto-generated method stub
 		
 	}
-	
-	private void releaseVideo(){
-		try {
-			mVideoPlayer.pause();
-			mVideoPlayer.releaseMediaPlayer();
-			mVideoPlayer.startPlayMedia();
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+
+	private void releaseVideoPlayer(){
+		mVideoPlayer.pause();
+		mVideoPlayer.releaseMediaPlayer();
 	}
 	
-	private void release(){
-		releaseVideo();
-		
-		if(mTwQTimer != null)
+	private void release(){	
+		releaseVideoPlayer();
+		if(mTwQTimer != null){
 			mTwQTimer.cancel();
-		if(mTbQTimer != null)
+			mTwQTimer.purge();
+		}
+		if(mTbQTimer != null){
 			mTbQTimer.cancel();
-		
+			mTbQTimer.purge();
+		}
 		stopSocketThread();
 	}
 	
@@ -596,6 +573,7 @@ public class MainActivity extends Activity  implements
 	protected void onPause() {
 		release();
 		super.onPause();
+		finish();
 	}
 
 }
