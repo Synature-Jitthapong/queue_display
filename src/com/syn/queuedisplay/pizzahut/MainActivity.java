@@ -206,8 +206,6 @@ public class MainActivity extends Activity  implements
 					e.getMessage());
 		}
 		
-		// create marquee
-		createMarqueeText();
 	}
 
 	@Override
@@ -365,12 +363,11 @@ public class MainActivity extends Activity  implements
 		if (!QueueApplication.getInfoText().equals("")) {
 			mWebView.setVisibility(View.VISIBLE);
 			StringBuilder strHtml = new StringBuilder();
-			strHtml.append("<html><head><meta charset=\"UTF-8\"></head>");
 			strHtml.append("<body style=\"text-align:center;background:#0B0B0B; color:#F0F0F0 \">");
 			strHtml.append("<marquee direction=\"left\" style=\"width: auto;\" >");
 			strHtml.append(QueueApplication.getInfoText());
 			strHtml.append("</marquee>");
-			strHtml.append("</body></html>");
+			strHtml.append("</body>");
 			mWebView.setVisibility(View.VISIBLE);
 			mWebView.loadData(strHtml.toString(), "text/html; charset=UTF-8", null);
 		} else {
@@ -600,6 +597,7 @@ public class MainActivity extends Activity  implements
 
 	@Override
 	protected void onResume() {
+		createMarqueeText();
 		configurationChange();
 		delayedHide(100);
 		super.onResume();
