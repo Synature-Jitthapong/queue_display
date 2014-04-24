@@ -181,24 +181,15 @@ public class MainActivity extends Activity  implements
 		// init media player
 		mVideoPlayer = new VideoPlayer(this, mSurface, 
 				QueueApplication.getVDODir(), this);
-		
-		if(QueueApplication.isEnableTb()){
-			mQueueLayout.setVisibility(View.VISIBLE);
-			
+
+		if(QueueApplication.isEnableTb()){ 
 			scheduleTb();
-		}else{
-			mQueueLayout.setVisibility(View.GONE);
 		}
 		
 		if(QueueApplication.isEnableTw()){
-			mQueueTakeLayout.setVisibility(View.VISIBLE);
-			
 			scheduleTw();
-			
 			mHandlerCountTwWaitTime = new Handler();
 			mWaitTimeThread.start();
-		}else{
-			mQueueTakeLayout.setVisibility(View.GONE);
 		}
 		
 		// init socket thread
@@ -227,6 +218,20 @@ public class MainActivity extends Activity  implements
 		// created, to briefly hint to the user that UI controls
 		// are available.
 		delayedHide(100);
+	}
+	
+	private void configurationChange(){
+		if(QueueApplication.isEnableTb()){
+			mQueueLayout.setVisibility(View.VISIBLE);
+		}else{
+			mQueueLayout.setVisibility(View.GONE);
+		}
+		
+		if(QueueApplication.isEnableTw()){
+			mQueueTakeLayout.setVisibility(View.VISIBLE);
+		}else{
+			mQueueTakeLayout.setVisibility(View.GONE);
+		}
 	}
 	
 	private void scheduleTb(){
@@ -356,8 +361,6 @@ public class MainActivity extends Activity  implements
 		
 	});
 	
-
-
 	private void createMarqueeText(){
 		if (!QueueApplication.getInfoText().equals("")) {
 			mWebView.setVisibility(View.VISIBLE);
@@ -597,6 +600,8 @@ public class MainActivity extends Activity  implements
 
 	@Override
 	protected void onResume() {
+		configurationChange();
+		delayedHide(100);
 		super.onResume();
 		if(mVideoPlayer.isPause())
 			mVideoPlayer.resume();
