@@ -6,6 +6,8 @@ public class TakeAwayData {
 	private int iKdsStatusID;
 	private String szKdsStatusName;
 	private String szStartDateTime;
+	private String szFinishDateTime;
+	private int iMinuteTimeAfterPickup;
 	
 	public String getSzTransName() {
 		return szTransName;
@@ -36,5 +38,17 @@ public class TakeAwayData {
 	}
 	public void setSzStartDateTime(String szStartDateTime) {
 		this.szStartDateTime = szStartDateTime;
+	}
+	public String getSzFinishDateTime() {
+		return szFinishDateTime;
+	}
+	public void setSzFinishDateTime(String szFinishDateTime) {
+		this.szFinishDateTime = szFinishDateTime;
+	}
+	public int getiMinuteTimeAfterPickup() {
+		return iMinuteTimeAfterPickup;
+	}
+	public void setiMinuteTimeAfterPickup(int iMinuteTimeAfterPickup) {
+		this.iMinuteTimeAfterPickup = iMinuteTimeAfterPickup;
 	}
 }

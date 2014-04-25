@@ -3,9 +3,12 @@ package com.syn.queuedisplay.pizzahut;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -16,12 +19,14 @@ import com.syn.queuedisplay.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -82,17 +87,26 @@ public class MainActivity extends Activity  implements
 	private Thread mSocketThread;
 	private QueueServerSocket mSocket;
 	
+	/*
+	 * queue timer to refresh
+	 */
 	private Timer mTwQTimer;
 	private Timer mTbQTimer;
 	
+	/*
+	 * clock timer
+	 */
+	private Timer mClockTimer;
+	
 	private Handler mHandlerCountTwWaitTime;
+	private Handler mHandlerHidePickup;
+	
+	private Calendar mCalendar;
 	
 	private List<TakeAwayData> mTakeAwayLst;
-	
 	private TakeAwayQueueAdapter mTakeAwayAdapter;
 	
 	private SurfaceView mSurface;
-	
 	private WebView mWebView;
 	private LinearLayout mQueueTakeLayout;
 	private LinearLayout mQueueLayout;
@@ -111,6 +125,7 @@ public class MainActivity extends Activity  implements
 	private TextView mTvSumQC;
 	private TextView mTvPlaying;
 	private TextView mTvVersion;
+	private TextView mTvClock;
 	private LayoutInflater mInflater;
 	
 	@Override
@@ -139,7 +154,8 @@ public class MainActivity extends Activity  implements
 		mTvSumQC = (TextView) findViewById(R.id.textViewSumQC);
 		mTvPlaying = (TextView) findViewById(R.id.textViewPlaying);
 		mTvVersion = (TextView) findViewById(R.id.tvVersion);
-		
+		mTvClock = (TextView) findViewById(R.id.tvClock);
+
 		PackageInfo pInfo;
 		try {
 			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -190,6 +206,9 @@ public class MainActivity extends Activity  implements
 			scheduleTw();
 			mHandlerCountTwWaitTime = new Handler();
 			mWaitTimeThread.start();
+			
+			mHandlerHidePickup = new Handler();
+			mHidePickupThread.start();
 		}
 		
 		// init socket thread
@@ -219,17 +238,70 @@ public class MainActivity extends Activity  implements
 	}
 	
 	private void configurationChange(){
+		startClock();
+		updateServerTime();
+		
 		if(QueueApplication.isEnableTb()){
 			mQueueLayout.setVisibility(View.VISIBLE);
+			
+			if(mTbQTimer == null)
+				scheduleTb();
 		}else{
 			mQueueLayout.setVisibility(View.GONE);
 		}
 		
 		if(QueueApplication.isEnableTw()){
 			mQueueTakeLayout.setVisibility(View.VISIBLE);
+			
+			if(mTwQTimer == null)
+				scheduleTw();
+			
+			if(mHandlerCountTwWaitTime == null){
+				mHandlerCountTwWaitTime = new Handler();
+				mWaitTimeThread.start();
+			}
+			
+			if(mHandlerHidePickup == null){
+				mHandlerHidePickup = new Handler();
+				mHidePickupThread.start();
+			}
 		}else{
 			mQueueTakeLayout.setVisibility(View.GONE);
 		}
+	}
+	
+	private void startClock(){
+		mCalendar = QueueApplication.sCalendar;
+		if(mClockTimer != null){
+			mClockTimer.cancel();
+			mClockTimer.purge();
+		}
+		mClockTimer = new Timer();
+		SystemClock clock = new SystemClock();
+		mClockTimer.schedule(clock, 0, 1000);
+	}
+	
+	private void updateServerTime(){
+		new UpdateServerTimeService(this, new WebServiceProgressListener(){
+
+			@Override
+			public void onPre() {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onPost() {
+				startClock();
+			}
+
+			@Override
+			public void onError(String msg) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		}).execute(QueueApplication.getFullUrl());
 	}
 	
 	private void scheduleTb(){
@@ -263,6 +335,25 @@ public class MainActivity extends Activity  implements
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+		
+	}
+	
+	class SystemClock extends TimerTask{
+
+		@Override
+		public void run() {
+			mCalendar.add(Calendar.SECOND, 1);
+			
+			final SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss", Locale.US);
+			runOnUiThread(new Runnable(){
+
+				@Override
+				public void run() {
+					mTvClock.setText(df.format(mCalendar.getTime()));
+				}
+				
+			});
 		}
 		
 	}
@@ -333,6 +424,51 @@ public class MainActivity extends Activity  implements
 				}
 	};
 
+	private final Thread mHidePickupThread = new Thread(new Runnable(){
+
+		@Override
+		public void run() {
+			if(mTakeAwayLst != null){
+				Iterator<TakeAwayData> i = mTakeAwayLst.iterator();
+				while(i.hasNext()){
+					TakeAwayData twData = i.next();
+					if(twData.getiKdsStatusID() == 2){
+						Calendar currTime = (Calendar) mCalendar.clone();
+						String strFinishDateTime = twData.getSzFinishDateTime();
+						if(!strFinishDateTime.equals("")){
+							SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
+							int minuteToHide = twData.getiMinuteTimeAfterPickup();
+							try {
+								Calendar cFinish = (Calendar) mCalendar.clone();
+								cFinish.setTime(df.parse(strFinishDateTime));
+								cFinish.add(Calendar.MINUTE, minuteToHide);
+								
+//								Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR, 
+//										QueueApplication.LOG_FILE_NAME, "CurrTime : " + df.format(currTime.getTime()) +
+//										" FinishTime : " + df.format(cFinish.getTime()));	
+								
+								if(currTime.compareTo(cFinish) >= 0){
+									i.remove();
+									mTakeAwayAdapter.notifyDataSetChanged();
+
+									Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR, 
+											QueueApplication.LOG_FILE_NAME, "CurrTime : " + df.format(currTime.getTime()) +
+											" FinishTime : " + df.format(cFinish.getTime()) + "\n" + 
+											" Remove  " + twData.getSzQueueName());									
+								}
+							} catch (ParseException e) {
+								Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR, 
+										QueueApplication.LOG_FILE_NAME, " Error when remove pickup : " + e.getMessage());
+							}
+						}
+					}
+				}
+			}
+			mHandlerHidePickup.postDelayed(this, 5000);
+		}
+		
+	});
+	
 	private final Thread mWaitTimeThread = new Thread(new Runnable(){
 
 		@Override
@@ -395,6 +531,17 @@ public class MainActivity extends Activity  implements
 		}
 	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// Handle the back button
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			return false;
+		}else {
+			return super.onKeyDown(keyCode, event);
+		}
+
+	}
+	
 	/**
 	 * Touch listener to use for in-layout UI controls to delay hiding the
 	 * system UI. This is to prevent the jarring behavior of controls going away
@@ -492,9 +639,10 @@ public class MainActivity extends Activity  implements
 //		mTakeAwayAdapter = new TakeAwayQueueAdapter(this, mTakeAwayLst);
 //		mLvTakeAway.setAdapter(mTakeAwayAdapter);
 		
+		mTakeAwayLst = new ArrayList<TakeAwayData>();
 		mTakeAwayLst = takeAwayLst;
 		mTakeAwayAdapter = new TakeAwayQueueAdapter(MainActivity.this, mTakeAwayLst);
-		mLvTakeAway.setAdapter(mTakeAwayAdapter);		
+		mLvTakeAway.setAdapter(mTakeAwayAdapter);			
 	}
 	
 	@Override

@@ -2,6 +2,7 @@ package com.syn.queuedisplay.pizzahut;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
 
 import android.app.Application;
 import android.content.Context;
@@ -17,12 +18,22 @@ public class QueueApplication extends Application{
 	
 	public static final String WEBSERVICE_NAME = "ws_mpos.asmx";
 	
+	public static Calendar sCalendar;
+	
 	public static Context sContext;
 	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		sContext = getApplicationContext();
+		sCalendar = Calendar.getInstance();
+		try {
+			com.j1tth4.mobile.util.FileManager fm = new 
+					com.j1tth4.mobile.util.FileManager(sContext, LOG_DIR);
+			fm.clear();
+		} catch (Exception e) {
+			
+		}
 	}
 	
 	public static String getFullUrl(){

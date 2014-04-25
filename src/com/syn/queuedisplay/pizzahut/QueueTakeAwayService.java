@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.google.gson.reflect.TypeToken;
 import com.j1tth4.mobile.util.JSONUtil;
+import com.j1tth4.mobile.util.Logger;
 import com.syn.pos.WebServiceResult;
 
 import android.content.Context;
@@ -21,6 +22,9 @@ public class QueueTakeAwayService extends QueueDisplayMainService {
 
 	@Override
 	protected void onPostExecute(String result) {
+		Logger.appendLog(mContext, QueueApplication.LOG_DIR, 
+				QueueApplication.LOG_FILE_NAME, "Data From WebService : " + result);	
+		
 		JSONUtil jsonUtil = new JSONUtil();
 		Type type = new TypeToken<WebServiceResult>() {}.getType();
 		try {
