@@ -19,14 +19,12 @@ import com.syn.queuedisplay.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -529,17 +527,6 @@ public class MainActivity extends Activity  implements
 		default:
 			return super.onOptionsItemSelected(item);
 		}
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// Handle the back button
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			return false;
-		}else {
-			return super.onKeyDown(keyCode, event);
-		}
-
 	}
 	
 	/**
