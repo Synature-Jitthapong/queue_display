@@ -37,4 +37,12 @@
 	<string name="about">About</string>
 	<string name="device_code">Device Code :</string>
 	<string name="exit_program">Exit Program</string>
+	<string name="select_logo">Select Logo</string>
+	<string name="manage_logo">Manage Logo</string>
+	<string name="save">Save</string>
+	<string name="save_logo_success">Save logo successfully.</string>
+	<string name="close">Close</string>
+	<string name="delete">Delete</string>
+	<string name="delete_success">Delete file successfully.</string>
+	<string name="confirm_delete_file">Are you sure you want to delete file?</string>
 </resources>

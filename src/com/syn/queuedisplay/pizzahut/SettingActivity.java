@@ -1,7 +1,9 @@
 package com.syn.queuedisplay.pizzahut;
 
 import java.util.List;
+
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -11,7 +13,13 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 
 public class SettingActivity extends PreferenceActivity{
 	
@@ -112,6 +120,7 @@ public class SettingActivity extends PreferenceActivity{
 	}
 	
 	public static class ResourceFragment extends PreferenceFragment{
+		
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);

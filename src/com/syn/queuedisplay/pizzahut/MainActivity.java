@@ -13,6 +13,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.j1tth4.mediaplayer.VideoPlayer;
+import com.j1tth4.mobile.util.FileManager;
 import com.j1tth4.mobile.util.Logger;
 import com.syn.pos.QueueDisplayInfo;
 import com.syn.queuedisplay.util.SystemUiHider;
@@ -22,6 +23,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,6 +35,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -124,6 +128,7 @@ public class MainActivity extends Activity  implements
 	private TextView mTvPlaying;
 	private TextView mTvVersion;
 	private TextView mTvClock;
+	private ImageView mImgLogo;
 	private LayoutInflater mInflater;
 	
 	@Override
@@ -153,6 +158,7 @@ public class MainActivity extends Activity  implements
 		mTvPlaying = (TextView) findViewById(R.id.textViewPlaying);
 		mTvVersion = (TextView) findViewById(R.id.tvVersion);
 		mTvClock = (TextView) findViewById(R.id.tvClock);
+		mImgLogo = (ImageView) findViewById(R.id.imageView1);
 
 		PackageInfo pInfo;
 		try {
@@ -238,6 +244,7 @@ public class MainActivity extends Activity  implements
 	private void configurationChange(){
 		startClock();
 		updateServerTime();
+		loadLogo();
 		
 		if(QueueApplication.isEnableTb()){
 			mQueueLayout.setVisibility(View.VISIBLE);
@@ -320,6 +327,12 @@ public class MainActivity extends Activity  implements
 		Logger.appendLog(MainActivity.this, QueueApplication.LOG_DIR,
 				QueueApplication.LOG_FILE_NAME, " start pickup queue timer "
 						+ QueueApplication.getRefresh() + "ms.");
+	}
+	
+	private void loadLogo(){
+		FileManager fm = new FileManager(this, ManageLogoFragment.LOGO_DIR);
+		Bitmap bitmap = BitmapFactory.decodeFile(fm.getFile(ManageLogoFragment.FILE_NAME).getPath());
+		mImgLogo.setImageBitmap(bitmap);
 	}
 	
 	class UpdateTwTask extends TimerTask{
