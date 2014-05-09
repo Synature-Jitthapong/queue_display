@@ -13,8 +13,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.j1tth4.mediaplayer.VideoPlayer;
-import com.j1tth4.mobile.util.FileManager;
-import com.j1tth4.mobile.util.Logger;
+import com.j1tth4.util.FileManager;
+import com.j1tth4.util.Logger;
 import com.syn.pos.QueueDisplayInfo;
 import com.syn.queuedisplay.util.SystemUiHider;
 

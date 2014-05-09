@@ -28,8 +28,8 @@ public class QueueApplication extends Application{
 		sContext = getApplicationContext();
 		sCalendar = Calendar.getInstance();
 		try {
-			com.j1tth4.mobile.util.FileManager fm = new 
-					com.j1tth4.mobile.util.FileManager(sContext, LOG_DIR);
+			com.j1tth4.util.FileManager fm = new 
+					com.j1tth4.util.FileManager(sContext, LOG_DIR);
 			fm.clear();
 		} catch (Exception e) {
 			

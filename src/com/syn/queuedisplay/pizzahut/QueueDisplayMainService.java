@@ -2,7 +2,7 @@ package com.syn.queuedisplay.pizzahut;
 
 import org.ksoap2.serialization.PropertyInfo;
 import android.content.Context;
-import com.j1tth4.mobile.util.DotNetWebServiceTask;
+import com.j1tth4.util.DotNetWebServiceTask;
 
 public class QueueDisplayMainService extends DotNetWebServiceTask {
 	

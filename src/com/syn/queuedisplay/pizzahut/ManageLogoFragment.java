@@ -4,8 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-import com.j1tth4.mobile.util.FileManager;
-import com.j1tth4.mobile.util.Logger;
+import com.j1tth4.util.FileManager;
+import com.j1tth4.util.Logger;
 
 import android.app.Activity;
 import android.app.AlertDialog;

@@ -3,7 +3,7 @@ package com.syn.queuedisplay.pizzahut;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import com.j1tth4.mobile.util.Logger;
+import com.j1tth4.util.Logger;
 
 import android.content.Context;
 

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.reflect.TypeToken;
-import com.j1tth4.mobile.util.JSONUtil;
+import com.j1tth4.util.JSONUtil;
 import com.syn.pos.QueueDisplayInfo;
 import com.syn.pos.WebServiceResult;
 

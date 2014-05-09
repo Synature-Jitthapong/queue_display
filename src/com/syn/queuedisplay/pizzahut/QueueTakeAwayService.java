@@ -4,8 +4,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import com.google.gson.reflect.TypeToken;
-import com.j1tth4.mobile.util.JSONUtil;
-import com.j1tth4.mobile.util.Logger;
+import com.j1tth4.util.JSONUtil;
+import com.j1tth4.util.Logger;
 import com.syn.pos.WebServiceResult;
 
 import android.content.Context;
