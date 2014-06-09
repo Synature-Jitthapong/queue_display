@@ -6,11 +6,7 @@
         <EditTextPreference android:key="pref_url" 
             android:title="@string/url" 
             android:summary="@string/backoffice_url"/>
-</PreferenceCategory>
-	<PreferenceCategory android:title="@string/enable_queue">
-		<CheckBoxPreference android:key="pref_enable_tw" android:title="@string/enable_tw_queue"/>
-		<CheckBoxPreference android:key="pref_enable_tb" android:title="@string/enable_table_queue"/>
-	</PreferenceCategory><ListPreference android:title="@string/refresh" 
+</PreferenceCategory><ListPreference android:title="@string/refresh" 
 	    android:key="pref_refresh" 
 	    android:entries="@array/pref_refresh_name" 
 	    android:entryValues="@array/pref_refresh_value" 

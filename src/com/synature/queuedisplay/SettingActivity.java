@@ -1,9 +1,8 @@
-package com.syn.queuedisplay.pizzahut;
+package com.synature.queuedisplay;
 
 import java.util.List;
 
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -13,13 +12,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
 
 public class SettingActivity extends PreferenceActivity{
 	
@@ -28,8 +21,6 @@ public class SettingActivity extends PreferenceActivity{
 	public static final String PREF_REFRESH = "pref_refresh";
 	public static final String PREF_VDO_DIR = "pref_vdo_dir";
 	public static final String PREF_INFO_TEXT = "pref_info_text";
-	public static final String PREF_ENABLE_TW = "pref_enable_tw";
-	public static final String PREF_ENABLE_TB = "pref_enable_tb";
 
 	private static final boolean ALWAYS_SIMPLE_PREFS = false;
 

@@ -1,11 +1,11 @@
-package com.syn.queuedisplay.pizzahut;
+package com.synature.queuedisplay;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-import com.j1tth4.util.FileManager;
-import com.j1tth4.util.Logger;
+import com.synature.util.FileManager;
+import com.synature.util.Logger;
 
 import android.app.Activity;
 import android.app.AlertDialog;

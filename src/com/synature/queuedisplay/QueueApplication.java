@@ -1,8 +1,10 @@
-package com.syn.queuedisplay.pizzahut;
+package com.synature.queuedisplay;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
+
+import com.synature.util.FileManager;
 
 import android.app.Application;
 import android.content.Context;
@@ -28,8 +30,8 @@ public class QueueApplication extends Application{
 		sContext = getApplicationContext();
 		sCalendar = Calendar.getInstance();
 		try {
-			com.j1tth4.util.FileManager fm = new 
-					com.j1tth4.util.FileManager(sContext, LOG_DIR);
+			FileManager fm = new 
+					FileManager(sContext, LOG_DIR);
 			fm.clear();
 		} catch (Exception e) {
 			
@@ -37,7 +39,7 @@ public class QueueApplication extends Application{
 	}
 	
 	public static String getFullUrl(){
-		return getUrl() + "/" + WEBSERVICE_NAME;
+		return getUrl();
 	}
 	
 	private static String getUrl(){
@@ -51,23 +53,11 @@ public class QueueApplication extends Application{
 		} catch (MalformedURLException e) {
 			// not found protocal
 			url = "http://" + url;
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return url;
 	}
 
-	public static boolean isEnableTb(){
-		SharedPreferences sharedPref = PreferenceManager
-				.getDefaultSharedPreferences(sContext);
-		return sharedPref.getBoolean(SettingActivity.PREF_ENABLE_TB, false);
-	}
-	
-	public static boolean isEnableTw(){
-		SharedPreferences sharedPref = PreferenceManager
-				.getDefaultSharedPreferences(sContext);
-		return sharedPref.getBoolean(SettingActivity.PREF_ENABLE_TW, false);
-	}
-	
 	public static long getRefresh(){
 		SharedPreferences sharedPref = PreferenceManager
 				.getDefaultSharedPreferences(sContext);

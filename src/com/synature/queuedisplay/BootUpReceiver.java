@@ -1,4 +1,4 @@
-package com.syn.queuedisplay.pizzahut;
+package com.synature.queuedisplay;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

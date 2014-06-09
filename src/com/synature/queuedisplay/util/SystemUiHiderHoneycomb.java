@@ -1,4 +1,4 @@
-package com.syn.queuedisplay.util;
+package com.synature.queuedisplay.util;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

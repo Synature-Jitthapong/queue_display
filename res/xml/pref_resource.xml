@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:key="pref_resource" android:title="@string/resource">
-<PreferenceCategory android:title="@string/resource"><EditTextPreference android:title="@string/vdo_dir" android:key="pref_vdo_dir" android:summary="@string/video_directory"/><EditTextPreference android:key="pref_info_text" android:title="@string/information_text"/></PreferenceCategory>
+<PreferenceCategory android:title="@string/resource"><EditTextPreference android:title="@string/vdo_dir" android:key="pref_vdo_dir" android:summary="@string/video_directory"/><EditTextPreference android:key="pref_sound_dir" android:summary="@string/sound_directory" android:title="@string/sound_dir"/><EditTextPreference android:key="pref_info_text" android:title="@string/information_text"/>
+
+</PreferenceCategory>
 <PreferenceCategory android:title="@string/manage_logo">
     <PreferenceScreen android:key="pref_manage_logo" android:title="@string/manage_logo" android:fragment="com.syn.queuedisplay.pizzahut.ManageLogoFragment"></PreferenceScreen>
 </PreferenceCategory>

@@ -45,4 +45,6 @@
 	<string name="delete">Delete</string>
 	<string name="delete_success">Delete file successfully.</string>
 	<string name="confirm_delete_file">Are you sure you want to delete file?</string>
+	<string name="sound_dir">Sound Dir</string>
+	<string name="sound_directory">Directory of sound</string>
 </resources>

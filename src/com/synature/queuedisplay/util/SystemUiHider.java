@@ -1,4 +1,4 @@
-package com.syn.queuedisplay.util;
+package com.synature.queuedisplay.util;
 
 import android.app.Activity;
 import android.os.Build;

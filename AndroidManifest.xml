@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.syn.queuedisplay.pizzahut"
+    package="com.synature.queuedisplay"
     android:versionCode="11"
     android:versionName="1.5.11" >
 
@@ -18,13 +18,13 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     
     <application
-        android:name="com.syn.queuedisplay.pizzahut.QueueApplication"
+        android:name="com.synature.queuedisplay.QueueApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.syn.queuedisplay.pizzahut.MainActivity"
+            android:name="com.synature.queuedisplay.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="landscape"
@@ -35,18 +35,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.syn.queuedisplay.pizzahut.SettingActivity"
+            android:name="com.synature.queuedisplay.SettingActivity"
             android:label="@menu/main_activity"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Holo"
             android:windowSoftInputMode="stateAlwaysHidden" >
         </activity>
         <activity
-            android:name="com.syn.queuedisplay.pizzahut.AboutActivity"
+            android:name="com.synature.queuedisplay.AboutActivity"
             android:label="@string/title_activity_about" android:theme="@android:style/Theme.Holo" android:screenOrientation="landscape">
         </activity>
         
-        <receiver android:enabled="true" android:name=".BootUpReceiver"
+        <receiver android:enabled="true" android:name="com.synature.queuedisplay.BootUpReceiver"
 			android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
 			<intent-filter>
 			    <action android:name="android.intent.action.BOOT_COMPLETED" />
