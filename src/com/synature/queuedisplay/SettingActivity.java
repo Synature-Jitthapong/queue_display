@@ -20,6 +20,8 @@ public class SettingActivity extends PreferenceActivity{
 	public static final String PREF_URL = "pref_url";
 	public static final String PREF_REFRESH = "pref_refresh";
 	public static final String PREF_VDO_DIR = "pref_vdo_dir";
+	public static final String PREF_SOUND_DIR = "pref_sound_dir";
+	public static final String PREF_CALLING_TIME = "pref_calling_time";
 	public static final String PREF_INFO_TEXT = "pref_info_text";
 
 	private static final boolean ALWAYS_SIMPLE_PREFS = false;
@@ -43,6 +45,8 @@ public class SettingActivity extends PreferenceActivity{
 		bindPreferenceSummaryToValue(findPreference(PREF_URL));
 		bindPreferenceSummaryToValue(findPreference(PREF_REFRESH));
 		bindPreferenceSummaryToValue(findPreference(PREF_VDO_DIR));
+		bindPreferenceSummaryToValue(findPreference(PREF_SOUND_DIR));
+		bindPreferenceSummaryToValue(findPreference(PREF_CALLING_TIME));
 		bindPreferenceSummaryToValue(findPreference(PREF_INFO_TEXT));
 	}
 
@@ -117,6 +121,8 @@ public class SettingActivity extends PreferenceActivity{
 			super.onCreate(savedInstanceState);
 			addPreferencesFromResource(R.xml.pref_resource);
 			bindPreferenceSummaryToValue(findPreference(PREF_VDO_DIR));
+			bindPreferenceSummaryToValue(findPreference(PREF_SOUND_DIR));
+			bindPreferenceSummaryToValue(findPreference(PREF_CALLING_TIME));
 			bindPreferenceSummaryToValue(findPreference(PREF_INFO_TEXT));
 		}
 	}

@@ -3,11 +3,10 @@ package com.synature.queuedisplay;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import com.syn.synaturequeue.SynatureQueue;
 import com.synature.queuedisplay.util.SystemUiHider;
+import com.synature.synaturequeue.SpeakCallingQueue;
+import com.synature.synaturequeue.SynatureQueue;
 import com.synature.util.FileManager;
 import com.synature.videoplayer.VideoPlayer;
 
@@ -37,7 +36,8 @@ import android.widget.TextView;
  * 
  * @see SystemUiHider
  */
-public class MainActivity extends Activity  implements VideoPlayer.MediaPlayerStateListener{
+public class MainActivity extends Activity implements 
+	VideoPlayer.MediaPlayerStateListener{
 	
 	/**
 	 * code that send from pRoMiSe Front Program over socket 
@@ -76,10 +76,7 @@ public class MainActivity extends Activity  implements VideoPlayer.MediaPlayerSt
 	
 	private VideoPlayer mVideoPlayer;
 	
-	/*
-	 * clock timer
-	 */
-	private Timer mClockTimer;
+	private Handler mHandlerClock;
 	
 	private Calendar mCalendar;
 	
@@ -160,40 +157,47 @@ public class MainActivity extends Activity  implements VideoPlayer.MediaPlayerSt
 	private void setupQueueView(){
 		// init the queue
 		SynatureQueue view = new SynatureQueue(this, QueueApplication.getShopId(),
-				QueueApplication.getFullUrl(), "Sound");
+				QueueApplication.getFullUrl(), QueueApplication.getSoundDir(),
+				2, QueueApplication.getCallingTime(),
+				new SpeakCallingQueue.OnPlaySoundListener() {
+					
+					@Override
+					public void onSpeaking() {
+						mVideoPlayer.setSoundVolumn(0f, 0f);
+					}
+					
+					@Override
+					public void onSpeakComplete() {
+						mVideoPlayer.setSoundVolumn(1f, 1f);
+					}
+				});
 		if(mQueueContainer.getChildCount() > 0)
 			mQueueContainer.removeAllViews();
 		mQueueContainer.addView(view);
 	}
 	
 	private void configurationChange(){
-		startClock();
+		//startClock();
 		loadLogo();
 	}
 	
 	private void startClock(){
 		mCalendar = QueueApplication.sCalendar;
-		if(mClockTimer != null){
-			mClockTimer.cancel();
-			mClockTimer.purge();
-		}
-		mClockTimer = new Timer();
-		SystemClock clock = new SystemClock();
-		mClockTimer.schedule(clock, 0, 1000);
+		mHandlerClock = new Handler();
+		mHandlerClock.post(clock);
 	}
 	
 	private void loadLogo(){
 		FileManager fm = new FileManager(this, ManageLogoFragment.LOGO_DIR);
 		Bitmap bitmap = BitmapFactory.decodeFile(fm.getFile(ManageLogoFragment.FILE_NAME).getPath());
-		mImgLogo.setImageBitmap(bitmap);
+		if(bitmap != null)
+			mImgLogo.setImageBitmap(bitmap);
 	}
 	
-	class SystemClock extends TimerTask{
+	Runnable clock = new Runnable(){
 
 		@Override
 		public void run() {
-			mCalendar.add(Calendar.SECOND, 1);
-			
 			final SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss", Locale.US);
 			runOnUiThread(new Runnable(){
 
@@ -203,9 +207,11 @@ public class MainActivity extends Activity  implements VideoPlayer.MediaPlayerSt
 				}
 				
 			});
+			mCalendar.add(Calendar.SECOND, 1);
+			mHandlerClock.postDelayed(this, 1000);
 		}
 		
-	}
+	};
 	
 //	private final Thread mHidePickupThread = new Thread(new Runnable(){
 //

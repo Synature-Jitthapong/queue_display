@@ -83,6 +83,18 @@ public class QueueApplication extends Application{
 				.getDefaultSharedPreferences(sContext);
 		return sharedPref.getString(SettingActivity.PREF_VDO_DIR, "");
 	}
+	
+	public static String getSoundDir(){
+		SharedPreferences sharedPref = PreferenceManager
+				.getDefaultSharedPreferences(sContext);
+		return sharedPref.getString(SettingActivity.PREF_SOUND_DIR, "");
+	}
+	
+	public static int getCallingTime(){
+		SharedPreferences sharedPref = PreferenceManager
+				.getDefaultSharedPreferences(sContext);
+		return Integer.parseInt(sharedPref.getString(SettingActivity.PREF_CALLING_TIME, "3"));
+	}
 
 	public static String getDeviceCode(){
 		return Secure.getString(sContext.getContentResolver(),
