@@ -48,4 +48,6 @@
 	<string name="sound_dir">Sound Dir</string>
 	<string name="sound_directory">Directory of sound</string>
 	<string name="calling_times">Calling Times</string>
+	<string name="queue_column">Queue Column</string>
+	<string name="queue_column_summary">Number of queue columns</string>
 </resources>

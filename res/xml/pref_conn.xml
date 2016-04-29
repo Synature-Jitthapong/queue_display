@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceCategory android:title="@string/connection">
-        <EditTextPreference android:title="@string/shop_id" 
-            android:key="pref_shop_id"/>
-        <EditTextPreference android:key="pref_url" 
-            android:title="@string/url" 
-            android:summary="@string/backoffice_url"/>
-</PreferenceCategory><ListPreference android:title="@string/refresh" 
-	    android:key="pref_refresh" 
-	    android:entries="@array/pref_refresh_name" 
-	    android:entryValues="@array/pref_refresh_value" 
-	    android:summary="@string/refresh_interval" 
-	    android:defaultValue="60000"/>
-	
+
+    <PreferenceCategory android:title="@string/connection" >
+        <EditTextPreference
+            android:key="pref_shop_id"
+            android:title="@string/shop_id" />
+        <EditTextPreference
+            android:key="pref_url"
+            android:summary="@string/backoffice_url"
+            android:title="@string/url" />
+    </PreferenceCategory>
+
+    <ListPreference
+        android:defaultValue="60000"
+        android:entries="@array/pref_refresh_name"
+        android:entryValues="@array/pref_refresh_value"
+        android:key="pref_refresh"
+        android:summary="@string/refresh_interval"
+        android:title="@string/refresh" />
+    
+    <ListPreference
+        android:defaultValue="3"
+        android:entries="@array/pref_column_name"
+        android:entryValues="@array/pref_column_value"
+        android:key="pref_queue_column"
+        android:summary="@string/queue_column_summary"
+        android:title="@string/queue_column" />
+
 </PreferenceScreen>

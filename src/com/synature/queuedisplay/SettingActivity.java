@@ -23,6 +23,7 @@ public class SettingActivity extends PreferenceActivity{
 	public static final String PREF_SOUND_DIR = "pref_sound_dir";
 	public static final String PREF_CALLING_TIME = "pref_calling_time";
 	public static final String PREF_INFO_TEXT = "pref_info_text";
+	public static final String PREF_QUEUE_COLUMN = "pref_queue_column";
 
 	private static final boolean ALWAYS_SIMPLE_PREFS = false;
 
@@ -48,6 +49,7 @@ public class SettingActivity extends PreferenceActivity{
 		bindPreferenceSummaryToValue(findPreference(PREF_SOUND_DIR));
 		bindPreferenceSummaryToValue(findPreference(PREF_CALLING_TIME));
 		bindPreferenceSummaryToValue(findPreference(PREF_INFO_TEXT));
+		bindPreferenceSummaryToValue(findPreference(PREF_QUEUE_COLUMN));
 	}
 
 	@Override
@@ -136,6 +138,7 @@ public class SettingActivity extends PreferenceActivity{
 			bindPreferenceSummaryToValue(findPreference(PREF_SHOP_ID));
 			bindPreferenceSummaryToValue(findPreference(PREF_URL));
 			bindPreferenceSummaryToValue(findPreference(PREF_REFRESH));
+			bindPreferenceSummaryToValue(findPreference(PREF_QUEUE_COLUMN));
 		}
 
 	}

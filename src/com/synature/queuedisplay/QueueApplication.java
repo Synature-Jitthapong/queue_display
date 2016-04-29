@@ -58,6 +58,21 @@ public class QueueApplication extends Application{
 		return url;
 	}
 
+	public static int getQueueColumn(){
+		SharedPreferences sharedPref = PreferenceManager
+				.getDefaultSharedPreferences(sContext);
+		int numQueue = 3;
+		try {
+			numQueue = Integer.parseInt(
+					sharedPref.getString(SettingActivity.PREF_QUEUE_COLUMN, "3"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return numQueue;
+	}
+	
+	
 	public static long getRefresh(){
 		SharedPreferences sharedPref = PreferenceManager
 				.getDefaultSharedPreferences(sContext);
@@ -93,7 +108,7 @@ public class QueueApplication extends Application{
 	public static int getCallingTime(){
 		SharedPreferences sharedPref = PreferenceManager
 				.getDefaultSharedPreferences(sContext);
-		return Integer.parseInt(sharedPref.getString(SettingActivity.PREF_CALLING_TIME, "3"));
+		return Integer.parseInt(sharedPref.getString(SettingActivity.PREF_CALLING_TIME, "1"));
 	}
 
 	public static String getDeviceCode(){

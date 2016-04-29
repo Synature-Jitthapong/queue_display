@@ -38,7 +38,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:scaleType="fitXY"
-                android:src="@drawable/shabushi_logo" />
+                android:src="@drawable/header_logo" />
 
             <TextView
                 android:id="@+id/tvClock"

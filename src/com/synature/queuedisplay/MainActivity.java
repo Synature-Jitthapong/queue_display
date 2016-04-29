@@ -158,7 +158,7 @@ public class MainActivity extends Activity implements
 		// init the queue
 		SynatureQueue view = new SynatureQueue(this, QueueApplication.getShopId(),
 				QueueApplication.getFullUrl(), QueueApplication.getSoundDir(),
-				2, QueueApplication.getCallingTime(),
+				QueueApplication.getQueueColumn(), QueueApplication.getCallingTime(),
 				new SpeakCallingQueue.OnPlaySoundListener() {
 					
 					@Override
@@ -171,6 +171,8 @@ public class MainActivity extends Activity implements
 						mVideoPlayer.setSoundVolumn(1f, 1f);
 					}
 				});
+//		SynatureQueue view = new SynatureQueue(this, QueueApplication.getShopId(),
+//				QueueApplication.getFullUrl(), QueueApplication.getSoundDir());
 		if(mQueueContainer.getChildCount() > 0)
 			mQueueContainer.removeAllViews();
 		mQueueContainer.addView(view);
